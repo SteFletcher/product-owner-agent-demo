@@ -8,3 +8,6 @@ __pycache__/
 .ruff_cache/
 results/
 *.egg-info/
+
+# Serena MCP tool state
+.serena/
