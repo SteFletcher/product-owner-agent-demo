@@ -2,34 +2,46 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Status
+## What this is
 
-Freshly bootstrapped: no application code, build, lint or test tooling exists yet. Update this file when they are added.
+A benchmark of one agentic Product Owner workflow (intent → PRD) run two ways on the same LangGraph: `llm` (an LLM decides everything) and `hybrid` (the LLM writes, **Jev** — TypeSafe's System One decision model — makes the bounded decisions). Read `docs/architecture.md`, `docs/graph.md` and `docs/engine-selection.md` before changing the graph; they are the design, and `docs/graph.md`'s node table must stay in step with `po_agent/graph/nodes.py`.
 
-## Repo and docs publishing
+## Commands
 
-- GitHub: `SteFletcher/product-owner-agent-demo` (public), default branch `main`.
-- `docs/` is published to GitHub Pages as static files (no build step) by `.github/workflows/pages.yml`.
-  - Triggers on push to `main` touching `docs/**` or the workflow file, or manually: `gh workflow run pages`.
-  - Pages source is set to "GitHub Actions" (not a branch). `docs/.nojekyll` disables Jekyll processing.
-  - Live site: https://stefletcher.github.io/product-owner-agent-demo/
-  - Check a deploy: `gh run list -w pages -L1`, then `gh run watch <id>`.
-- If docs move to Markdown + a generator (MkDocs, Jekyll, etc.), add a build step before `upload-pages-artifact` and point its `path` at the build output.
+```bash
+make setup                 # uv venv (.venv, Python 3.12) + editable install with dev extras
+make check                 # key, OTel collector, MCP server, Jev, LLM reachability (spends ~$0.0001)
+make test                  # offline tests, fake engines (PO_TELEMETRY=0 is set for you)
+make lint                  # ruff
+make run-hybrid INTENT=examples/example-intent.md     # one real run (~3–5 min, a few cents)
+make run-llm
+make benchmark RUNS=3 REPEATS=5                       # both variants ×3, blind judge, consistency replay
+make graph                 # Mermaid from the compiled graph
+make dashboard             # regenerate grafana/po-benchmark.json and push to Grafana (:3001)
+.venv/bin/python -m pytest tests/test_graph.py -k risk_loop   # one test
+```
 
-## Local observability (OpenTelemetry)
+Secrets: `.env` with `OPENROUTER_API_KEY` (the Makefile exports it). OpenRouter serves both the LLMs (`/api/v1/chat/completions`) and Jev (`/api/v1/systemone`, model `typesafe/jev-1.13`). A local Jev-shaped server may run on `127.0.0.1:8200` (Jev-Omni); point `jev.base_url` at it to compare.
 
-A shared OTel stack runs in Docker on this machine (compose project `otel-stack`, defined in `~/Repos/devops/otel-stack`). Instrument the agent to export OTLP to it:
+## Architecture in one paragraph
 
-| Service | Endpoint |
-|---|---|
-| OTel Collector, OTLP gRPC | `http://127.0.0.1:4317` |
-| OTel Collector, OTLP HTTP | `http://127.0.0.1:4318` |
-| Collector health check | `http://127.0.0.1:13133/` |
-| Grafana | `http://127.0.0.1:3001` |
-| Tempo (traces) | `http://127.0.0.1:3200` |
-| Loki (logs) | `http://127.0.0.1:3100` |
-| Prometheus (metrics) | `http://127.0.0.1:9090` |
+`cli.py` → `adk_app.py` (Google ADK `BaseAgent`, no model of its own) → `runner.py` (one run: engines, MCP session, root span, result files) → `graph/build.py` (StateGraph, three gated loops with caps from `config.loops`) → `graph/nodes.py` (`Nodes.wrap` adds the span, metrics and `NodeResult` to every node) → `engines/` (`OpenRouterLLM`, `JevEngine`, and `LLMDecisionEngine`, which asks the LLM the *same* typed questions Jev gets) and `knowledge/` (MCP server over `data/catalogue.yaml`; `StaticKnowledge` for tests). `benchmark.py` orchestrates runs, `evaluation/judge.py` (blind A/B) and `evaluation/consistency.py` (replay bounded nodes on fixed input), then writes `results/<id>/comparison.{json,md}`.
 
-- Typical env: `OTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:4318`, `OTEL_SERVICE_NAME=product-owner-agent-demo`.
-- From inside a Docker container use `host.docker.internal` instead of `127.0.0.1`; ports are bound to localhost only.
-- Check the collector: `curl -s http://127.0.0.1:13133/` and `docker logs otel-collector`. Pipeline config lives in the `otel-stack` repo, not here.
+Invariants worth keeping:
+- Bounded nodes never know which engine answered: they get `Answer` objects from `engines/base.normalise`. Thresholds live in `config.thresholds`, not in nodes.
+- Generative nodes use strict JSON schemas (`strict_schema`) except `construct_prd`/`refine_prd`, which return plain Markdown with `llm.prd_max_tokens`; a `finish_reason == "length"` raises `Truncated` and is not retried.
+- Costs are `Cost(value, source)`; an unknown cost stays unknown through every aggregation. Never invent a price: add it to `config/pricing.yaml` with `as_of`.
+- Metrics only carry the dimensions in `telemetry.METRIC_DIMENSIONS`; run ids, prompts and documents go on spans only.
+- Prompts are `graph/prompts/*.md` (`string.Template`, `$name` placeholders); questions are `graph/questions.py`.
+
+## Results and telemetry
+
+`results/` is gitignored. Each run dir has `prd.md`, `metrics.json`, `node-results.json` (per node: engine, tokens, cost, latency, input/output hashes, decision evidence), `state.json`, `trace-id`. Traces: Tempo at `127.0.0.1:3200` (service `product-owner-agent-demo`); metrics in Prometheus as `po_node_duration_milliseconds_*`, `po_node_tokens_total`, `po_node_cost_USD_total`, `po_inference_*`, `po_mcp_*`, `po_run_*` with labels `workflow_variant`, `graph_node_name`, `engine_type`, `model_name`. Grafana board uid `po-benchmark` is generated by `tools/gendashboard.py`; edit the generator, not the JSON.
+
+## Docs and Pages
+
+`docs/*.md` (Mermaid allowed) are built by `tools/builddocs.py` into HTML and published by `.github/workflows/pages.yml` on pushes to `main` touching `docs/`. Site: https://stefletcher.github.io/product-owner-agent-demo/. Check a deploy with `gh run list -w pages -L1`.
+
+## Local observability stack
+
+Shared OTel stack in Docker (compose project `otel-stack`, source `~/Repos/devops/otel-stack`): collector OTLP HTTP `127.0.0.1:4318` / gRPC `4317`, health `:13133`; Grafana `:3001` (anonymous admin; datasource UIDs `tempo`, `prometheus`, `loki`); Tempo `:3200`; Prometheus `:9090`; Loki `:3100`. From a container use `host.docker.internal`.

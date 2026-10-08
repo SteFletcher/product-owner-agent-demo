@@ -1,0 +1,2112 @@
+{
+ "uid": "po-benchmark",
+ "title": "Product Owner benchmark: LLM vs LLM + Jev",
+ "tags": [
+  "benchmark",
+  "jev",
+  "langgraph"
+ ],
+ "timezone": "browser",
+ "schemaVersion": 39,
+ "version": 1,
+ "editable": true,
+ "time": {
+  "from": "now-6h",
+  "to": "now"
+ },
+ "refresh": "30s",
+ "templating": {
+  "list": [
+   {
+    "name": "variant",
+    "label": "variant",
+    "type": "query",
+    "datasource": {
+     "type": "prometheus",
+     "uid": "prometheus"
+    },
+    "includeAll": true,
+    "multi": true,
+    "query": {
+     "query": "label_values(po_node_duration_milliseconds_count, workflow_variant)",
+     "refId": "v"
+    },
+    "current": {
+     "text": "All",
+     "value": "$__all"
+    },
+    "allValue": ".*",
+    "refresh": 2
+   }
+  ]
+ },
+ "panels": [
+  {
+   "id": 1,
+   "type": "row",
+   "title": "Summary: baseline (llm) vs hybrid (llm + jev)",
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 24,
+    "h": 1
+   },
+   "collapsed": false,
+   "panels": []
+  },
+  {
+   "id": 2,
+   "type": "stat",
+   "title": "Total run latency (median)",
+   "description": "Over the dashboard time range; set the range to one experiment.",
+   "gridPos": {
+    "x": 0,
+    "y": 1,
+    "w": 6,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant) (max_over_time(po_run_duration_milliseconds_bucket{workflow_variant=~\"$variant\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "text"
+     },
+     "noValue": "\u2013",
+     "links": []
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 3,
+   "type": "stat",
+   "title": "LLM latency per run (median)",
+   "description": "Over the dashboard time range; set the range to one experiment.",
+   "gridPos": {
+    "x": 6,
+    "y": 1,
+    "w": 6,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\", engine_type=\"llm\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "text"
+     },
+     "noValue": "\u2013",
+     "links": []
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 4,
+   "type": "stat",
+   "title": "Jev latency per node (median)",
+   "description": "Over the dashboard time range; set the range to one experiment.",
+   "gridPos": {
+    "x": 12,
+    "y": 1,
+    "w": 6,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\", engine_type=\"jev\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "text"
+     },
+     "noValue": "\u2013",
+     "links": []
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 5,
+   "type": "stat",
+   "title": "MCP latency per call (median)",
+   "description": "Over the dashboard time range; set the range to one experiment.",
+   "gridPos": {
+    "x": 18,
+    "y": 1,
+    "w": 6,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, mcp_tool) (max_over_time(po_mcp_duration_milliseconds_bucket[$__range])))",
+     "legendFormat": "{{mcp_tool}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "text"
+     },
+     "noValue": "\u2013",
+     "links": []
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 6,
+   "type": "stat",
+   "title": "Input tokens",
+   "description": "Over the dashboard time range; set the range to one experiment.",
+   "gridPos": {
+    "x": 0,
+    "y": 5,
+    "w": 6,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "sum by (workflow_variant) (max_over_time(po_node_tokens_total{workflow_variant=~\"$variant\", direction=\"input\"}[$__range]))",
+     "legendFormat": "{{workflow_variant}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "text"
+     },
+     "noValue": "\u2013",
+     "links": []
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 7,
+   "type": "stat",
+   "title": "Output tokens",
+   "description": "Over the dashboard time range; set the range to one experiment.",
+   "gridPos": {
+    "x": 6,
+    "y": 5,
+    "w": 6,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "sum by (workflow_variant) (max_over_time(po_node_tokens_total{workflow_variant=~\"$variant\", direction=\"output\"}[$__range]))",
+     "legendFormat": "{{workflow_variant}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "text"
+     },
+     "noValue": "\u2013",
+     "links": []
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 8,
+   "type": "stat",
+   "title": "Total cost (USD)",
+   "description": "Over the dashboard time range; set the range to one experiment.",
+   "gridPos": {
+    "x": 12,
+    "y": 5,
+    "w": 6,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "sum by (workflow_variant) (max_over_time(po_node_cost_USD_total{workflow_variant=~\"$variant\"}[$__range]))",
+     "legendFormat": "{{workflow_variant}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "currencyUSD",
+     "decimals": 4,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "text"
+     },
+     "noValue": "\u2013",
+     "links": []
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 9,
+   "type": "stat",
+   "title": "Inference calls",
+   "description": "Over the dashboard time range; set the range to one experiment.",
+   "gridPos": {
+    "x": 18,
+    "y": 5,
+    "w": 6,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "sum by (engine_type) (max_over_time(po_inference_calls_total{status=\"ok\"}[$__range]))",
+     "legendFormat": "{{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "text"
+     },
+     "noValue": "\u2013",
+     "links": []
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 10,
+   "type": "stat",
+   "title": "Retries",
+   "description": "Over the dashboard time range; set the range to one experiment.",
+   "gridPos": {
+    "x": 0,
+    "y": 9,
+    "w": 6,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "sum by (engine_type) (max_over_time(po_inference_retries_total[$__range]))",
+     "legendFormat": "{{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "text"
+     },
+     "noValue": "\u2013",
+     "links": []
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 11,
+   "type": "stat",
+   "title": "Errors (failed calls)",
+   "description": "Over the dashboard time range; set the range to one experiment.",
+   "gridPos": {
+    "x": 6,
+    "y": 9,
+    "w": 6,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "sum by (engine_type) (max_over_time(po_inference_calls_total{status=\"error\"}[$__range]))",
+     "legendFormat": "{{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "text"
+     },
+     "noValue": "\u2013",
+     "links": []
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 12,
+   "type": "stat",
+   "title": "Runs",
+   "description": "Over the dashboard time range; set the range to one experiment.",
+   "gridPos": {
+    "x": 12,
+    "y": 9,
+    "w": 6,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "sum by (workflow_variant, status) (max_over_time(po_run_outcome_total{workflow_variant=~\"$variant\"}[$__range]))",
+     "legendFormat": "{{workflow_variant}} {{status}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "text"
+     },
+     "noValue": "\u2013",
+     "links": []
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 13,
+   "type": "row",
+   "title": "Workflow: median latency per node, llm vs hybrid (click a panel title for traces)",
+   "gridPos": {
+    "x": 0,
+    "y": 13,
+    "w": 24,
+    "h": 1
+   },
+   "collapsed": false,
+   "panels": []
+  },
+  {
+   "id": 14,
+   "type": "stat",
+   "title": "1. parse_intent",
+   "description": "generative node. Median latency per execution.",
+   "gridPos": {
+    "x": 0,
+    "y": 14,
+    "w": 4,
+    "h": 5
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant, engine_type) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\", graph_node_name=\"parse_intent\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}} \u00b7 {{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "blue"
+     },
+     "noValue": "\u2013",
+     "links": [
+      {
+       "title": "Traces for parse_intent (Tempo)",
+       "targetBlank": true,
+       "url": "/explore?schemaVersion=1&panes={\"po\":{\"datasource\":\"tempo\",\"queries\":[{\"refId\":\"A\",\"queryType\":\"traceql\",\"query\":\"{resource.service.name=\\\"product-owner-agent-demo\\\" && name=\\\"parse_intent\\\"}\",\"limit\":20}],\"range\":{\"from\":\"${__from}\",\"to\":\"${__to}\"}}}"
+      }
+     ]
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 15,
+   "type": "stat",
+   "title": "2. retrieve_knowledge",
+   "description": "retrieval node. Median latency per execution.",
+   "gridPos": {
+    "x": 4,
+    "y": 14,
+    "w": 4,
+    "h": 5
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant, engine_type) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\", graph_node_name=\"retrieve_knowledge\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}} \u00b7 {{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "green"
+     },
+     "noValue": "\u2013",
+     "links": [
+      {
+       "title": "Traces for retrieve_knowledge (Tempo)",
+       "targetBlank": true,
+       "url": "/explore?schemaVersion=1&panes={\"po\":{\"datasource\":\"tempo\",\"queries\":[{\"refId\":\"A\",\"queryType\":\"traceql\",\"query\":\"{resource.service.name=\\\"product-owner-agent-demo\\\" && name=\\\"retrieve_knowledge\\\"}\",\"limit\":20}],\"range\":{\"from\":\"${__from}\",\"to\":\"${__to}\"}}}"
+      }
+     ]
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 16,
+   "type": "stat",
+   "title": "3. select_capabilities",
+   "description": "bounded node. Median latency per execution.",
+   "gridPos": {
+    "x": 8,
+    "y": 14,
+    "w": 4,
+    "h": 5
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant, engine_type) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\", graph_node_name=\"select_capabilities\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}} \u00b7 {{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "red"
+     },
+     "noValue": "\u2013",
+     "links": [
+      {
+       "title": "Traces for select_capabilities (Tempo)",
+       "targetBlank": true,
+       "url": "/explore?schemaVersion=1&panes={\"po\":{\"datasource\":\"tempo\",\"queries\":[{\"refId\":\"A\",\"queryType\":\"traceql\",\"query\":\"{resource.service.name=\\\"product-owner-agent-demo\\\" && name=\\\"select_capabilities\\\"}\",\"limit\":20}],\"range\":{\"from\":\"${__from}\",\"to\":\"${__to}\"}}}"
+      }
+     ]
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 17,
+   "type": "stat",
+   "title": "4. select_personas",
+   "description": "bounded node. Median latency per execution.",
+   "gridPos": {
+    "x": 12,
+    "y": 14,
+    "w": 4,
+    "h": 5
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant, engine_type) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\", graph_node_name=\"select_personas\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}} \u00b7 {{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "red"
+     },
+     "noValue": "\u2013",
+     "links": [
+      {
+       "title": "Traces for select_personas (Tempo)",
+       "targetBlank": true,
+       "url": "/explore?schemaVersion=1&panes={\"po\":{\"datasource\":\"tempo\",\"queries\":[{\"refId\":\"A\",\"queryType\":\"traceql\",\"query\":\"{resource.service.name=\\\"product-owner-agent-demo\\\" && name=\\\"select_personas\\\"}\",\"limit\":20}],\"range\":{\"from\":\"${__from}\",\"to\":\"${__to}\"}}}"
+      }
+     ]
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 18,
+   "type": "stat",
+   "title": "5. identify_outcomes",
+   "description": "generative node. Median latency per execution.",
+   "gridPos": {
+    "x": 16,
+    "y": 14,
+    "w": 4,
+    "h": 5
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant, engine_type) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\", graph_node_name=\"identify_outcomes\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}} \u00b7 {{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "blue"
+     },
+     "noValue": "\u2013",
+     "links": [
+      {
+       "title": "Traces for identify_outcomes (Tempo)",
+       "targetBlank": true,
+       "url": "/explore?schemaVersion=1&panes={\"po\":{\"datasource\":\"tempo\",\"queries\":[{\"refId\":\"A\",\"queryType\":\"traceql\",\"query\":\"{resource.service.name=\\\"product-owner-agent-demo\\\" && name=\\\"identify_outcomes\\\"}\",\"limit\":20}],\"range\":{\"from\":\"${__from}\",\"to\":\"${__to}\"}}}"
+      }
+     ]
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 19,
+   "type": "stat",
+   "title": "6. retrieve_constraints",
+   "description": "retrieval node. Median latency per execution.",
+   "gridPos": {
+    "x": 20,
+    "y": 14,
+    "w": 4,
+    "h": 5
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant, engine_type) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\", graph_node_name=\"retrieve_constraints\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}} \u00b7 {{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "green"
+     },
+     "noValue": "\u2013",
+     "links": [
+      {
+       "title": "Traces for retrieve_constraints (Tempo)",
+       "targetBlank": true,
+       "url": "/explore?schemaVersion=1&panes={\"po\":{\"datasource\":\"tempo\",\"queries\":[{\"refId\":\"A\",\"queryType\":\"traceql\",\"query\":\"{resource.service.name=\\\"product-owner-agent-demo\\\" && name=\\\"retrieve_constraints\\\"}\",\"limit\":20}],\"range\":{\"from\":\"${__from}\",\"to\":\"${__to}\"}}}"
+      }
+     ]
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 20,
+   "type": "stat",
+   "title": "7. assess_constraints",
+   "description": "bounded node. Median latency per execution.",
+   "gridPos": {
+    "x": 0,
+    "y": 19,
+    "w": 4,
+    "h": 5
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant, engine_type) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\", graph_node_name=\"assess_constraints\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}} \u00b7 {{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "red"
+     },
+     "noValue": "\u2013",
+     "links": [
+      {
+       "title": "Traces for assess_constraints (Tempo)",
+       "targetBlank": true,
+       "url": "/explore?schemaVersion=1&panes={\"po\":{\"datasource\":\"tempo\",\"queries\":[{\"refId\":\"A\",\"queryType\":\"traceql\",\"query\":\"{resource.service.name=\\\"product-owner-agent-demo\\\" && name=\\\"assess_constraints\\\"}\",\"limit\":20}],\"range\":{\"from\":\"${__from}\",\"to\":\"${__to}\"}}}"
+      }
+     ]
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 21,
+   "type": "stat",
+   "title": "8. discover_risks",
+   "description": "generative node. Median latency per execution.",
+   "gridPos": {
+    "x": 4,
+    "y": 19,
+    "w": 4,
+    "h": 5
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant, engine_type) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\", graph_node_name=\"discover_risks\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}} \u00b7 {{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "blue"
+     },
+     "noValue": "\u2013",
+     "links": [
+      {
+       "title": "Traces for discover_risks (Tempo)",
+       "targetBlank": true,
+       "url": "/explore?schemaVersion=1&panes={\"po\":{\"datasource\":\"tempo\",\"queries\":[{\"refId\":\"A\",\"queryType\":\"traceql\",\"query\":\"{resource.service.name=\\\"product-owner-agent-demo\\\" && name=\\\"discover_risks\\\"}\",\"limit\":20}],\"range\":{\"from\":\"${__from}\",\"to\":\"${__to}\"}}}"
+      }
+     ]
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 22,
+   "type": "stat",
+   "title": "9. assess_risks",
+   "description": "bounded node. Median latency per execution.",
+   "gridPos": {
+    "x": 8,
+    "y": 19,
+    "w": 4,
+    "h": 5
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant, engine_type) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\", graph_node_name=\"assess_risks\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}} \u00b7 {{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "red"
+     },
+     "noValue": "\u2013",
+     "links": [
+      {
+       "title": "Traces for assess_risks (Tempo)",
+       "targetBlank": true,
+       "url": "/explore?schemaVersion=1&panes={\"po\":{\"datasource\":\"tempo\",\"queries\":[{\"refId\":\"A\",\"queryType\":\"traceql\",\"query\":\"{resource.service.name=\\\"product-owner-agent-demo\\\" && name=\\\"assess_risks\\\"}\",\"limit\":20}],\"range\":{\"from\":\"${__from}\",\"to\":\"${__to}\"}}}"
+      }
+     ]
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 23,
+   "type": "stat",
+   "title": "10. investigate_risks",
+   "description": "generative node. Median latency per execution.",
+   "gridPos": {
+    "x": 12,
+    "y": 19,
+    "w": 4,
+    "h": 5
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant, engine_type) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\", graph_node_name=\"investigate_risks\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}} \u00b7 {{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "blue"
+     },
+     "noValue": "\u2013",
+     "links": [
+      {
+       "title": "Traces for investigate_risks (Tempo)",
+       "targetBlank": true,
+       "url": "/explore?schemaVersion=1&panes={\"po\":{\"datasource\":\"tempo\",\"queries\":[{\"refId\":\"A\",\"queryType\":\"traceql\",\"query\":\"{resource.service.name=\\\"product-owner-agent-demo\\\" && name=\\\"investigate_risks\\\"}\",\"limit\":20}],\"range\":{\"from\":\"${__from}\",\"to\":\"${__to}\"}}}"
+      }
+     ]
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 24,
+   "type": "stat",
+   "title": "11. generate_requirements",
+   "description": "generative node. Median latency per execution.",
+   "gridPos": {
+    "x": 16,
+    "y": 19,
+    "w": 4,
+    "h": 5
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant, engine_type) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\", graph_node_name=\"generate_requirements\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}} \u00b7 {{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "blue"
+     },
+     "noValue": "\u2013",
+     "links": [
+      {
+       "title": "Traces for generate_requirements (Tempo)",
+       "targetBlank": true,
+       "url": "/explore?schemaVersion=1&panes={\"po\":{\"datasource\":\"tempo\",\"queries\":[{\"refId\":\"A\",\"queryType\":\"traceql\",\"query\":\"{resource.service.name=\\\"product-owner-agent-demo\\\" && name=\\\"generate_requirements\\\"}\",\"limit\":20}],\"range\":{\"from\":\"${__from}\",\"to\":\"${__to}\"}}}"
+      }
+     ]
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 25,
+   "type": "stat",
+   "title": "12. classify_requirements",
+   "description": "bounded node. Median latency per execution.",
+   "gridPos": {
+    "x": 20,
+    "y": 19,
+    "w": 4,
+    "h": 5
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant, engine_type) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\", graph_node_name=\"classify_requirements\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}} \u00b7 {{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "red"
+     },
+     "noValue": "\u2013",
+     "links": [
+      {
+       "title": "Traces for classify_requirements (Tempo)",
+       "targetBlank": true,
+       "url": "/explore?schemaVersion=1&panes={\"po\":{\"datasource\":\"tempo\",\"queries\":[{\"refId\":\"A\",\"queryType\":\"traceql\",\"query\":\"{resource.service.name=\\\"product-owner-agent-demo\\\" && name=\\\"classify_requirements\\\"}\",\"limit\":20}],\"range\":{\"from\":\"${__from}\",\"to\":\"${__to}\"}}}"
+      }
+     ]
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 26,
+   "type": "stat",
+   "title": "13. check_coverage",
+   "description": "bounded node. Median latency per execution.",
+   "gridPos": {
+    "x": 0,
+    "y": 24,
+    "w": 4,
+    "h": 5
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant, engine_type) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\", graph_node_name=\"check_coverage\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}} \u00b7 {{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "red"
+     },
+     "noValue": "\u2013",
+     "links": [
+      {
+       "title": "Traces for check_coverage (Tempo)",
+       "targetBlank": true,
+       "url": "/explore?schemaVersion=1&panes={\"po\":{\"datasource\":\"tempo\",\"queries\":[{\"refId\":\"A\",\"queryType\":\"traceql\",\"query\":\"{resource.service.name=\\\"product-owner-agent-demo\\\" && name=\\\"check_coverage\\\"}\",\"limit\":20}],\"range\":{\"from\":\"${__from}\",\"to\":\"${__to}\"}}}"
+      }
+     ]
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 27,
+   "type": "stat",
+   "title": "14. refine_requirements",
+   "description": "generative node. Median latency per execution.",
+   "gridPos": {
+    "x": 4,
+    "y": 24,
+    "w": 4,
+    "h": 5
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant, engine_type) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\", graph_node_name=\"refine_requirements\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}} \u00b7 {{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "blue"
+     },
+     "noValue": "\u2013",
+     "links": [
+      {
+       "title": "Traces for refine_requirements (Tempo)",
+       "targetBlank": true,
+       "url": "/explore?schemaVersion=1&panes={\"po\":{\"datasource\":\"tempo\",\"queries\":[{\"refId\":\"A\",\"queryType\":\"traceql\",\"query\":\"{resource.service.name=\\\"product-owner-agent-demo\\\" && name=\\\"refine_requirements\\\"}\",\"limit\":20}],\"range\":{\"from\":\"${__from}\",\"to\":\"${__to}\"}}}"
+      }
+     ]
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 28,
+   "type": "stat",
+   "title": "15. construct_prd",
+   "description": "generative node. Median latency per execution.",
+   "gridPos": {
+    "x": 8,
+    "y": 24,
+    "w": 4,
+    "h": 5
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant, engine_type) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\", graph_node_name=\"construct_prd\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}} \u00b7 {{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "blue"
+     },
+     "noValue": "\u2013",
+     "links": [
+      {
+       "title": "Traces for construct_prd (Tempo)",
+       "targetBlank": true,
+       "url": "/explore?schemaVersion=1&panes={\"po\":{\"datasource\":\"tempo\",\"queries\":[{\"refId\":\"A\",\"queryType\":\"traceql\",\"query\":\"{resource.service.name=\\\"product-owner-agent-demo\\\" && name=\\\"construct_prd\\\"}\",\"limit\":20}],\"range\":{\"from\":\"${__from}\",\"to\":\"${__to}\"}}}"
+      }
+     ]
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 29,
+   "type": "stat",
+   "title": "16. validate_prd",
+   "description": "bounded node. Median latency per execution.",
+   "gridPos": {
+    "x": 12,
+    "y": 24,
+    "w": 4,
+    "h": 5
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant, engine_type) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\", graph_node_name=\"validate_prd\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}} \u00b7 {{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "red"
+     },
+     "noValue": "\u2013",
+     "links": [
+      {
+       "title": "Traces for validate_prd (Tempo)",
+       "targetBlank": true,
+       "url": "/explore?schemaVersion=1&panes={\"po\":{\"datasource\":\"tempo\",\"queries\":[{\"refId\":\"A\",\"queryType\":\"traceql\",\"query\":\"{resource.service.name=\\\"product-owner-agent-demo\\\" && name=\\\"validate_prd\\\"}\",\"limit\":20}],\"range\":{\"from\":\"${__from}\",\"to\":\"${__to}\"}}}"
+      }
+     ]
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 30,
+   "type": "stat",
+   "title": "17. refine_prd",
+   "description": "generative node. Median latency per execution.",
+   "gridPos": {
+    "x": 16,
+    "y": 24,
+    "w": 4,
+    "h": 5
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant, engine_type) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\", graph_node_name=\"refine_prd\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}} \u00b7 {{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "blue"
+     },
+     "noValue": "\u2013",
+     "links": [
+      {
+       "title": "Traces for refine_prd (Tempo)",
+       "targetBlank": true,
+       "url": "/explore?schemaVersion=1&panes={\"po\":{\"datasource\":\"tempo\",\"queries\":[{\"refId\":\"A\",\"queryType\":\"traceql\",\"query\":\"{resource.service.name=\\\"product-owner-agent-demo\\\" && name=\\\"refine_prd\\\"}\",\"limit\":20}],\"range\":{\"from\":\"${__from}\",\"to\":\"${__to}\"}}}"
+      }
+     ]
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 31,
+   "type": "stat",
+   "title": "18. finalise",
+   "description": "deterministic node. Median latency per execution.",
+   "gridPos": {
+    "x": 20,
+    "y": 24,
+    "w": 4,
+    "h": 5
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, workflow_variant, engine_type) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\", graph_node_name=\"finalise\"}[$__range])))",
+     "legendFormat": "{{workflow_variant}} \u00b7 {{engine_type}}",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "time_series"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "orientation": "horizontal",
+    "textMode": "value_and_name",
+    "colorMode": "background",
+    "graphMode": "none",
+    "justifyMode": "center",
+    "wideLayout": true
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "text"
+     },
+     "noValue": "\u2013",
+     "links": [
+      {
+       "title": "Traces for finalise (Tempo)",
+       "targetBlank": true,
+       "url": "/explore?schemaVersion=1&panes={\"po\":{\"datasource\":\"tempo\",\"queries\":[{\"refId\":\"A\",\"queryType\":\"traceql\",\"query\":\"{resource.service.name=\\\"product-owner-agent-demo\\\" && name=\\\"finalise\\\"}\",\"limit\":20}],\"range\":{\"from\":\"${__from}\",\"to\":\"${__to}\"}}}"
+      }
+     ]
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 32,
+   "type": "row",
+   "title": "Node detail",
+   "gridPos": {
+    "x": 0,
+    "y": 29,
+    "w": 24,
+    "h": 1
+   },
+   "collapsed": false,
+   "panels": []
+  },
+  {
+   "id": 33,
+   "type": "table",
+   "title": "Per node: median latency, tokens, cost, executions (time range)",
+   "gridPos": {
+    "x": 0,
+    "y": 30,
+    "w": 24,
+    "h": 14
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.5, sum by (le, graph_node_name, workflow_variant, engine_type, model_name) (max_over_time(po_node_duration_milliseconds_bucket{workflow_variant=~\"$variant\"}[$__range])))",
+     "legendFormat": "",
+     "refId": "A",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "sum by (graph_node_name, workflow_variant, engine_type, model_name) (max_over_time(po_node_tokens_total{workflow_variant=~\"$variant\", direction=\"input\"}[$__range]))",
+     "legendFormat": "",
+     "refId": "B",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "sum by (graph_node_name, workflow_variant, engine_type, model_name) (max_over_time(po_node_tokens_total{workflow_variant=~\"$variant\", direction=\"output\"}[$__range]))",
+     "legendFormat": "",
+     "refId": "C",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "sum by (graph_node_name, workflow_variant, engine_type, model_name) (max_over_time(po_node_cost_USD_total{workflow_variant=~\"$variant\"}[$__range]))",
+     "legendFormat": "",
+     "refId": "D",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "sum by (graph_node_name, workflow_variant, engine_type, model_name) (max_over_time(po_node_duration_milliseconds_count{workflow_variant=~\"$variant\"}[$__range]))",
+     "legendFormat": "",
+     "refId": "E",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    }
+   ],
+   "transformations": [
+    {
+     "id": "merge",
+     "options": {}
+    },
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time": true,
+       "Time 1": true,
+       "Time 2": true,
+       "Time 3": true,
+       "Time 4": true,
+       "Time 5": true
+      },
+      "renameByName": {
+       "Value #A": "median ms",
+       "Value #B": "input tokens",
+       "Value #C": "output tokens",
+       "Value #D": "cost USD",
+       "Value #E": "executions",
+       "graph_node_name": "node",
+       "workflow_variant": "variant",
+       "engine_type": "engine",
+       "model_name": "model"
+      }
+     }
+    },
+    {
+     "id": "sortBy",
+     "options": {
+      "sort": [
+       {
+        "field": "node"
+       }
+      ]
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "decimals": 0
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "cost USD"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "currencyUSD"
+       },
+       {
+        "id": "decimals",
+        "value": 5
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "median ms"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "ms"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "showHeader": true,
+    "cellHeight": "sm"
+   }
+  },
+  {
+   "id": 34,
+   "type": "row",
+   "title": "Traces",
+   "gridPos": {
+    "x": 0,
+    "y": 44,
+    "w": 24,
+    "h": 1
+   },
+   "collapsed": false,
+   "panels": []
+  },
+  {
+   "id": 35,
+   "type": "table",
+   "title": "ProductOwner.Run traces: llm",
+   "gridPos": {
+    "x": 0,
+    "y": 45,
+    "w": 12,
+    "h": 10
+   },
+   "datasource": {
+    "type": "tempo",
+    "uid": "tempo"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "tempo",
+      "uid": "tempo"
+     },
+     "refId": "A",
+     "queryType": "traceql",
+     "limit": 20,
+     "tableType": "traces",
+     "query": "{resource.service.name=\"product-owner-agent-demo\" && name=\"ProductOwner.Run\" && span.workflow.variant=\"llm\"}"
+    }
+   ],
+   "options": {
+    "showHeader": true
+   }
+  },
+  {
+   "id": 36,
+   "type": "table",
+   "title": "ProductOwner.Run traces: hybrid",
+   "gridPos": {
+    "x": 12,
+    "y": 45,
+    "w": 12,
+    "h": 10
+   },
+   "datasource": {
+    "type": "tempo",
+    "uid": "tempo"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "tempo",
+      "uid": "tempo"
+     },
+     "refId": "A",
+     "queryType": "traceql",
+     "limit": 20,
+     "tableType": "traces",
+     "query": "{resource.service.name=\"product-owner-agent-demo\" && name=\"ProductOwner.Run\" && span.workflow.variant=\"hybrid\"}"
+    }
+   ],
+   "options": {
+    "showHeader": true
+   }
+  }
+ ],
+ "links": [
+  {
+   "title": "Explore traces",
+   "type": "link",
+   "url": "/explore?left={\"datasource\":\"tempo\",\"queries\":[{\"refId\":\"A\",\"queryType\":\"traceql\",\"query\":\"{resource.service.name=\\\"product-owner-agent-demo\\\"}\"}]}"
+  }
+ ]
+}

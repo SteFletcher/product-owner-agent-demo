@@ -1,0 +1,64 @@
+# Central configuration. Secrets never go here: *_env names the environment variable to read.
+# Any string value may use ${VAR} or ${VAR:-default}; see docs/configuration.md.
+
+llm:
+  provider: openrouter
+  base_url: https://openrouter.ai/api/v1
+  api_key_env: OPENROUTER_API_KEY
+  model: anthropic/claude-haiku-4.5          # generative nodes, both variants
+  decision_model: anthropic/claude-haiku-4.5 # bounded nodes in the llm (baseline) variant
+  node_models: {}                            # per-node overrides, e.g. construct_prd: anthropic/claude-sonnet-5
+  temperature: 0.2
+  decision_temperature: 0.0
+  max_tokens: 6000
+  prd_max_tokens: 24000                      # construct_prd / refine_prd (plain Markdown output)
+  timeout_s: 180
+  retries: 2
+
+jev:
+  provider: openrouter
+  base_url: https://openrouter.ai/api
+  endpoint: /v1/systemone
+  api_key_env: OPENROUTER_API_KEY
+  model: typesafe/jev-1.13
+  # Local alternative (same wire, no reported cost):
+  #   base_url: http://127.0.0.1:8200   api_key_env: ""   model: jev-omni
+  timeout_s: 60
+  retries: 2
+  chunk_size: 12                             # per-item questions per call; keeps well under 32k tokens
+
+judge:
+  model: anthropic/claude-sonnet-5
+  temperature: 0.0
+  max_tokens: 3000                           # one-sentence notes; larger budgets have run away at temperature 0
+
+knowledge:
+  transport: stdio
+  command: ["python", "-m", "po_agent.knowledge.server"]
+
+telemetry:
+  enabled: true
+  otlp_endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://127.0.0.1:4318}
+  service_name: product-owner-agent-demo
+  metric_export_interval_s: 5
+
+thresholds:
+  capability_selected: 0.5
+  persona_selected: 0.5
+  policy_applies: 0.5
+  feature_overlaps: 0.6
+  risk_investigate: 0.6
+  risk_priority_investigate: 12               # likelihood x impact on 1-5 scales
+  outcome_delivered: 0.5
+  validation_pass: 0.6
+
+loops:
+  risk_attempts: 2
+  requirement_attempts: 3
+  prd_attempts: 2
+
+benchmark:
+  results_dir: results
+  runs: 1
+  consistency_repeats: 5
+  judge_both_orders: true

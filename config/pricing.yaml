@@ -1,0 +1,16 @@
+# Pricing catalogue: USD per million tokens. Used as a cross-check when the provider reports a
+# cost, and as the only source when it does not. A model missing from here with no reported cost
+# has an unknown cost, and the report says so rather than guessing.
+#
+# Source: OpenRouter model endpoints, 2026-10-08. Keep the date when you update a line.
+
+models:
+  typesafe/jev-1.13:            {input: 0.042, output: 0.0,  as_of: 2026-10-08}
+  ~typesafe/jev-latest:         {input: 0.042, output: 0.0,  as_of: 2026-10-08}
+  anthropic/claude-haiku-4.5:   {input: 1.0,   output: 5.0,  as_of: 2026-10-08}
+  anthropic/claude-sonnet-5:    {input: 2.0,   output: 10.0, as_of: 2026-10-08}
+  anthropic/claude-opus-5:      {input: 5.0,   output: 25.0, as_of: 2026-10-08}
+  google/gemini-2.5-flash:      {input: 0.3,   output: 2.5,  as_of: 2026-10-08}
+  openai/gpt-5-mini:            {input: 0.25,  output: 2.0,  as_of: 2026-10-08}
+  # Local Jev-Omni runs on your own hardware: no list price. Leave it out so cost reads "unknown",
+  # or set it to 0.0 to count it as free.

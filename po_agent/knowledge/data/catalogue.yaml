@@ -1,0 +1,184 @@
+# Enterprise knowledge for "Northwind Retail", an omnichannel retailer. Mock data served over MCP.
+# Ids are stable: the graph links decisions to them, and the consistency experiment hashes them.
+
+capabilities:
+  - {id: cap-order-mgmt, name: Order management, owner: Commerce Platform,
+     description: Capture, amend and cancel customer orders across channels; order status lifecycle.}
+  - {id: cap-fulfilment, name: Delivery and fulfilment, owner: Supply Chain Tech,
+     description: Allocate stock, pick/pack, carrier booking, delivery slots and rescheduling, tracking events.}
+  - {id: cap-returns, name: Returns and refunds, owner: Commerce Platform,
+     description: Return initiation, labels, collection, inspection, refund issuance.}
+  - {id: cap-identity, name: Customer identity and accounts, owner: Customer Platform,
+     description: Registration, login, guest checkout, account details, addresses, consent preferences.}
+  - {id: cap-payments, name: Payments, owner: Payments,
+     description: Card, wallet and BNPL payments, authorisation, capture, refunds, fraud screening hand-off.}
+  - {id: cap-loyalty, name: Loyalty and promotions, owner: Marketing Tech,
+     description: Points, tiers, vouchers, promotional pricing and eligibility rules.}
+  - {id: cap-catalogue, name: Product catalogue, owner: Merchandising Tech,
+     description: Product data, attributes, pricing, availability, age restrictions.}
+  - {id: cap-search, name: Search and discovery, owner: Digital Experience,
+     description: Site and app search, browse, recommendations, personalisation.}
+  - {id: cap-comms, name: Customer communications, owner: Customer Platform,
+     description: Transactional email, SMS and push; preference management; templates.}
+  - {id: cap-store-ops, name: Store operations, owner: Retail Tech,
+     description: Store stock, click-and-collect handover, colleague devices, in-store returns.}
+  - {id: cap-contact-centre, name: Contact centre, owner: Customer Care,
+     description: Agent desktop, case management, chat and telephony, knowledge base.}
+  - {id: cap-analytics, name: Analytics and reporting, owner: Data Platform,
+     description: Event tracking, dashboards, experimentation, KPI reporting.}
+
+channels:
+  - {id: ch-web, name: Website, description: Responsive web storefront and account area.}
+  - {id: ch-app, name: Mobile app, description: Native iOS and Android app with push notifications.}
+  - {id: ch-store, name: Store, description: Physical stores, colleague handheld devices, kiosks.}
+  - {id: ch-contact-centre, name: Contact centre, description: Phone, chat and email handled by agents.}
+  - {id: ch-messaging, name: Email and SMS, description: Outbound transactional and marketing messages.}
+  - {id: ch-marketplace, name: Partner marketplaces, description: Orders placed on third-party marketplaces and fulfilled by Northwind.}
+
+personas:
+  - id: per-online-shopper
+    name: Online shopper
+    role: Customer
+    description: Buys on the website or app for home delivery, usually in the evening on a phone.
+    goals: [Get the order delivered when they are at home, Know what is happening without having to ask]
+    pain_points: [Missed deliveries, Having to phone to change anything, Vague tracking messages]
+  - id: per-click-collect
+    name: Click-and-collect customer
+    role: Customer
+    description: Orders online and collects in store, often on the way home from work.
+    goals: [Collect quickly without queueing, Be told the moment the order is ready]
+    pain_points: [Arriving before the order is ready, Collection point not obvious in store]
+  - id: per-loyalty-member
+    name: Loyalty member
+    role: Customer
+    description: Frequent customer in a loyalty tier who expects recognition and perks across channels.
+    goals: [See points and perks applied automatically, Feel recognised in every channel]
+    pain_points: [Perks that only work online, Points missing after returns]
+  - id: per-accessibility
+    name: Customer with accessibility needs
+    role: Customer
+    description: Uses a screen reader or needs larger text and simple flows; may rely on the phone channel.
+    goals: [Complete tasks independently, Not be forced into a channel they cannot use]
+    pain_points: [Unlabelled controls, Time-limited steps, Inaccessible maps and date pickers]
+  - id: per-trade-buyer
+    name: Trade (B2B) buyer
+    role: Customer
+    description: Buys in bulk for a business account with invoicing and scheduled deliveries.
+    goals: [Predictable delivery windows, Consolidated invoices]
+    pain_points: [Consumer flows that ignore business needs, No way to delegate to colleagues]
+  - id: per-store-colleague
+    name: Store colleague
+    role: Employee
+    description: Serves customers at the collection desk and handles in-store returns on a handheld device.
+    goals: [Find the order fast, Resolve problems without calling anyone]
+    pain_points: [Systems that disagree on order status, Devices that time out]
+  - id: per-contact-agent
+    name: Contact centre agent
+    role: Employee
+    description: Handles calls and chats about orders, deliveries and refunds using the agent desktop.
+    goals: [See the same information the customer sees, Fix things in one contact]
+    pain_points: [Customers who could have self-served, Tools that need five screens for one change]
+  - id: per-delivery-driver
+    name: Delivery driver (carrier)
+    role: Partner
+    description: Third-party carrier driver following the carrier's route and app; not a Northwind employee.
+    goals: [Fewer failed deliveries, Accurate delivery instructions]
+    pain_points: [Last-minute changes that do not reach the carrier app, Wrong addresses]
+  - id: per-warehouse-op
+    name: Warehouse operative
+    role: Employee
+    description: Picks and packs orders in the fulfilment centre against a cut-off schedule.
+    goals: [Stable pick lists, Clear cut-offs]
+    pain_points: [Orders changing after picking has started]
+  - id: per-merchandiser
+    name: Merchandiser
+    role: Employee
+    description: Manages product ranges, pricing and promotions and watches sell-through.
+    goals: [Launch promotions on time, See the effect quickly]
+    pain_points: [Promotion rules that behave differently per channel]
+  - id: per-marketing-manager
+    name: Marketing manager
+    role: Employee
+    description: Runs campaigns and owns customer communication volume and consent.
+    goals: [Relevant messages, Measurable campaigns]
+    pain_points: [Transactional messages that read like marketing, Consent handled inconsistently]
+  - id: per-finance-analyst
+    name: Finance analyst
+    role: Employee
+    description: Reconciles payments, refunds and carrier costs and reports margin.
+    goals: [Clean reconciliation, Visibility of cost per order]
+    pain_points: [Refunds that cannot be traced to a reason, Carrier surcharges arriving late]
+
+policies:
+  - {id: pol-gdpr, name: Data minimisation (UK GDPR), kind: privacy, capability_ids: [cap-identity, cap-comms, cap-analytics, cap-contact-centre],
+     summary: Collect and show only the personal data needed for the task; define retention; no personal data in analytics events without pseudonymisation.}
+  - {id: pol-pci, name: PCI DSS scope control, kind: security, capability_ids: [cap-payments, cap-contact-centre],
+     summary: Card data is handled only by the tokenising payment provider; no card numbers in logs, chats or agent screens.}
+  - {id: pol-consumer-rights, name: Consumer Rights Act returns, kind: regulatory, capability_ids: [cap-returns, cap-order-mgmt],
+     summary: Online purchases can be cancelled within 14 days of delivery and refunded within 14 days of return; refund the original payment method.}
+  - {id: pol-accessibility, name: Accessibility (WCAG 2.2 AA), kind: accessibility, capability_ids: [cap-identity, cap-order-mgmt, cap-fulfilment, cap-returns, cap-search, cap-loyalty],
+     summary: All customer-facing journeys must meet WCAG 2.2 AA, including date pickers, maps and time-limited steps.}
+  - {id: pol-pricing-law, name: Promotional pricing rules (CMA), kind: regulatory, capability_ids: [cap-loyalty, cap-catalogue, cap-search],
+     summary: Reference prices must be genuine; promotional terms must be shown before commitment; the same offer must behave the same across channels.}
+  - {id: pol-fraud, name: Fraud screening, kind: security, capability_ids: [cap-payments, cap-order-mgmt, cap-fulfilment, cap-returns],
+     summary: Orders and address changes above risk thresholds go through the fraud screening service before fulfilment; refunds above threshold need a second approver.}
+  - {id: pol-delivery-comms, name: Delivery communication SLA, kind: operational, capability_ids: [cap-fulfilment, cap-comms],
+     summary: Customers get a message within 15 minutes of any delivery status change; messages must name the next action if one is needed.}
+  - {id: pol-retention, name: Data retention schedule, kind: privacy, capability_ids: [cap-order-mgmt, cap-identity, cap-contact-centre, cap-analytics],
+     summary: Order and contact records retained 7 years for finance; behavioural analytics 26 months; delete or anonymise on expiry.}
+  - {id: pol-age-restricted, name: Age-restricted products, kind: regulatory, capability_ids: [cap-catalogue, cap-fulfilment, cap-store-ops],
+     summary: Alcohol, knives and similar require age verification at handover; carriers must support age check on delivery.}
+  - {id: pol-marketing-consent, name: Marketing consent (PECR), kind: regulatory, capability_ids: [cap-comms, cap-loyalty],
+     summary: Marketing messages need opt-in consent; transactional messages must not carry marketing content.}
+  - {id: pol-change-freeze, name: Peak change freeze, kind: operational, capability_ids: [cap-order-mgmt, cap-fulfilment, cap-payments, cap-store-ops],
+     summary: No production changes to order, fulfilment, payment or store systems from 15 November to 5 January without CAB exception.}
+  - {id: pol-carrier-contract, name: Carrier contract terms, kind: commercial, capability_ids: [cap-fulfilment],
+     summary: Rescheduling after the carrier manifest cut-off incurs a surcharge; same-day changes are only possible with carriers on the real-time API.}
+
+features:
+  - {id: feat-tracking-page, name: Order tracking page, status: live, capability_ids: [cap-order-mgmt, cap-fulfilment],
+     description: Public tracking page reached from the order email showing carrier status events and estimated delivery day.}
+  - {id: feat-sms-notify, name: SMS and email delivery notifications, status: live, capability_ids: [cap-comms, cap-fulfilment],
+     description: Templated messages on dispatch, out-for-delivery, delivered and failed-delivery events.}
+  - {id: feat-returns-portal, name: Self-service returns portal, status: live, capability_ids: [cap-returns],
+     description: Customers start a return, choose a reason and print or download a label.}
+  - {id: feat-address-change, name: Pre-dispatch address change, status: live, capability_ids: [cap-order-mgmt],
+     description: Customers can change the delivery address in their account until the order is picked.}
+  - {id: feat-stock-lookup, name: Store stock lookup, status: live, capability_ids: [cap-store-ops, cap-catalogue],
+     description: Product pages show stock at nearby stores.}
+  - {id: feat-loyalty-wallet, name: Loyalty wallet, status: live, capability_ids: [cap-loyalty, cap-identity],
+     description: Points balance, tier and vouchers in the app and website account.}
+  - {id: feat-agent-desktop, name: Agent desktop order view, status: live, capability_ids: [cap-contact-centre, cap-order-mgmt],
+     description: Agents see orders, carrier events and can trigger a redelivery request by phoning the carrier.}
+  - {id: feat-delivery-slots, name: Delivery slot selection at checkout, status: live, capability_ids: [cap-fulfilment],
+     description: Customers choose a delivery day (and a 2-hour window for grocery) at checkout.}
+  - {id: feat-collect-ready, name: Click-and-collect ready notification, status: live, capability_ids: [cap-store-ops, cap-comms],
+     description: Message when a collection order is ready in store.}
+  - {id: feat-push-opt-in, name: App push notification opt-in, status: beta, capability_ids: [cap-comms, cap-identity],
+     description: Preference centre for push categories in the app.}
+
+services:
+  - {id: svc-oms, name: Order Management System (OMS), owner: Commerce Platform, capability_ids: [cap-order-mgmt, cap-returns],
+     description: System of record for orders; publishes order events; REST and event APIs.}
+  - {id: svc-carrier-gateway, name: Carrier integration gateway, owner: Supply Chain Tech, capability_ids: [cap-fulfilment],
+     description: Normalises carrier APIs; three of five carriers support real-time reschedule, two are batch manifest only.}
+  - {id: svc-notify, name: Notification service, owner: Customer Platform, capability_ids: [cap-comms],
+     description: Sends email, SMS and push from templates; rate-limited; honours consent flags from the identity service.}
+  - {id: svc-identity, name: Identity service, owner: Customer Platform, capability_ids: [cap-identity],
+     description: Customer accounts, authentication, consent and preferences; OIDC.}
+  - {id: svc-payments, name: Payment gateway, owner: Payments, capability_ids: [cap-payments],
+     description: Tokenised payments and refunds via the PSP; supports partial refunds.}
+  - {id: svc-loyalty, name: Loyalty engine, owner: Marketing Tech, capability_ids: [cap-loyalty],
+     description: Points accrual and burn, tier evaluation, voucher issuance.}
+  - {id: svc-fraud, name: Fraud screening service, owner: Payments, capability_ids: [cap-payments, cap-order-mgmt],
+     description: Risk-scores orders and account changes; synchronous API with 300 ms p95.}
+  - {id: svc-analytics, name: Analytics platform, owner: Data Platform, capability_ids: [cap-analytics],
+     description: Event ingestion, warehouse, dashboards, experimentation assignment.}
+  - {id: svc-store-app, name: Store colleague app, owner: Retail Tech, capability_ids: [cap-store-ops],
+     description: Handheld app for collection handover, stock and in-store returns; offline-tolerant.}
+
+glossary:
+  - {term: Manifest cut-off, definition: The time after which a carrier's route for the next day is fixed and changes become exceptions.}
+  - {term: Slot, definition: A delivery day, or a day plus a 2-hour window, chosen by the customer.}
+  - {term: Failed delivery, definition: A carrier attempt that did not result in handover; triggers a redelivery or return-to-sender.}
+  - {term: CAB, definition: Change Advisory Board, which approves exceptions to the peak change freeze.}
