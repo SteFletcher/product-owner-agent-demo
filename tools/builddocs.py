@@ -229,8 +229,8 @@ class Charts:
         step = (W - left - right) / n
         lane_y = {"llm": 64, "hybrid": 150}
         H = 262
-        out = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="Eighteen workflow nodes in two lanes, '
-               f'coloured by the engine that ran them, with median seconds per node">']
+        out = [(f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="Eighteen workflow nodes in two lanes, '
+                f'coloured by the engine that ran them, with median seconds per node">')]
         # column index above, node names below the second lane's labels, angled down-right for room
         for i, name in enumerate(NODE_ORDER):
             x = left + step * (i + 0.5)
@@ -282,8 +282,8 @@ class Charts:
     def paired(self, metric: str) -> str:
         key, fmt, title, sub = {
             "latency": ("latency_ms", fmt_s, "Bounded decisions: time per step",
-                        "Median wall time per execution of each bounded node, three executions per engine. "
-                        "Same questions, same thresholds; only the engine differs."),
+                        ("Median wall time per execution of each bounded node, three executions per engine. "
+                         "Same questions, same thresholds; only the engine differs.")),
             "cost": ("cost_usd", fmt_usd, "Bounded decisions: cost per step",
                      "Median provider-reported cost per execution. Jev bills input tokens only, at $0.042 per million."),
         }[metric]
