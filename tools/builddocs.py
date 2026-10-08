@@ -1,5 +1,6 @@
 """Build docs/*.md into a static site: one design system, charts generated from the experiment's
-own data (docs/data/comparison.json), Mermaid rendered client-side.
+own data (docs/data/comparison.json), the graph drawn from the compiled graph's own data
+(docs/data/graph.json, written by `make graph`), Mermaid rendered client-side elsewhere.
 
     python tools/builddocs.py [--out site]
 
@@ -11,6 +12,7 @@ Markdown pages may use placeholders, each on its own line:
     {{chart:composition}}    where a run's time and cost go, per variant
     {{chart:consistency}}    decision agreement per bounded node, per engine
     {{chart:quality}}        blind judge scores per rubric dimension
+    {{graph}}                the explorable graph diagram (docs/graph.md only: its node table is the text)
 Every chart ships with a table twin. Needs the `markdown` package only.
 """
 from __future__ import annotations
@@ -56,7 +58,9 @@ CSS = """
 :root{color-scheme:light;
   --page:#f6f7f5;--surface:#ffffff;--ink:#15213a;--ink-2:#5b6475;--muted:#8a909c;--hair:#dcdfe4;--hair-2:#eceef1;
   --llm:#2a78d6;--jev:#eb6834;--mcp:#8a909c;--none:#c3c7cf;--wash:#eef3fb;--wash-jev:#fdf0ea;
-  --ok:#0a7f3f;--font:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;}
+  --ok:#0a7f3f;--font:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --g-gen-soft:color-mix(in srgb,var(--llm) 14%,var(--surface));--g-bounded-soft:color-mix(in srgb,var(--jev) 16%,var(--surface));
+  --g-mcp-soft:color-mix(in srgb,var(--mcp) 16%,var(--surface));--g-det-soft:var(--surface);}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){color-scheme:dark;
   --page:#0f1218;--surface:#171b23;--ink:#f2f3f5;--ink-2:#b9bec8;--muted:#8a909c;--hair:#2a2f3a;--hair-2:#20242d;
   --llm:#3987e5;--jev:#d95926;--mcp:#8a909c;--none:#3a4050;--wash:#1b2638;--wash-jev:#33211a;--ok:#4cc38a;}}
@@ -454,10 +458,455 @@ class Charts:
                 f'<a href="executive-summary.html">executive summary</a>.</p></section>')
 
 
+# --- the graph figure -------------------------------------------------------------------------------
+# An explorable diagram of the compiled graph (docs/data/graph.json): one column of nodes top to
+# bottom, loop bodies to the right, the knowledge server to the left. Click a box, or a row of the
+# node table, for what it does and where it is implemented. The prose comes from the node table in
+# docs/graph.md, so there is one place to edit it.
+
+GRAPH_DATA = DOCS / "data" / "graph.json"
+GW, GX, GWID, GH, GPITCH = 1120, 420, 280, 58, 104   # canvas width, column x, box width/height, row pitch
+SIDE_X, SIDE_W, LEFT_X = 850, 240, 50
+KIND_OF_TYPE = {"generative": "gen", "bounded": "bounded", "retrieval": "mcp", "deterministic": "det"}
+KIND_CAPTION = {"gen": "generative · LLM", "bounded": "bounded · LLM or Jev", "mcp": "retrieval · MCP",
+                "det": "deterministic · code", "file": "file"}
+KIND_WORD = {"gen": "Generative: the LLM writes this in both variants.",
+             "bounded": "Bounded decision: typed questions with a fixed answer space. The LLM answers them in "
+                        "the baseline, Jev in the hybrid; thresholds live in config, not in the node.",
+             "mcp": "Retrieval: the node calls the enterprise knowledge MCP server; no model is involved.",
+             "det": "Deterministic: plain code, no inference.",
+             "file": "A file on disk."}
+LANES = {"parse_intent": "Understand the intent", "retrieve_constraints": "Constraints",
+         "discover_risks": "Risks", "generate_requirements": "Requirements", "construct_prd": "The PRD"}
+# what passes along the plain edges; conditional edges are labelled from the loop caps
+EDGE_LABELS = {
+    ("intent", "parse_intent"): "the intent, as written",
+    ("parse_intent", "retrieve_knowledge"): "the brief",
+    ("select_capabilities", "select_personas"): "selected capabilities and channels",
+    ("select_personas", "identify_outcomes"): "impacted personas, rated",
+    ("identify_outcomes", "retrieve_constraints"): "outcomes with signals",
+    ("retrieve_constraints", "assess_constraints"): "candidate policies, features, services",
+    ("assess_constraints", "discover_risks"): "applicable policies, overlapping features",
+    ("discover_risks", "assess_risks"): "risks, unassessed",
+    ("generate_requirements", "classify_requirements"): "candidate requirements",
+    ("classify_requirements", "check_coverage"): "typed, prioritised, deduplicated",
+    ("construct_prd", "validate_prd"): "the PRD, in Markdown",
+    ("finalise", "prd"): "front matter added, results frozen",
+}
+QUESTIONS_OF = {
+    "select_capabilities": ("capability_questions", ["capability_selected"]),
+    "select_personas": ("persona_questions", ["persona_selected"]),
+    "assess_constraints": ("constraint_questions", ["policy_applies", "feature_overlaps"]),
+    "assess_risks": ("risk_questions, level_value", ["risk_investigate", "risk_priority_investigate"]),
+    "classify_requirements": ("requirement_questions, rank_requirements", ["feature_overlaps"]),
+    "check_coverage": ("coverage_questions", ["outcome_delivered"]),
+    "validate_prd": ("validation_questions, PRD_CHECKS, BLOCKING_CHECKS", ["validation_pass"]),
+}
+GATES = {"assess_risks": ("after_assess_risks", "risk_attempts"),
+         "check_coverage": ("after_check_coverage", "requirement_attempts"),
+         "validate_prd": ("after_validate_prd", "prd_attempts")}
+PSEUDO = {
+    "intent": {"title": "Intent document", "kind": "file",
+               "what": "A product intent in plain Markdown: the one input to a run.",
+               "impl": ["examples/example-intent.md · the bundled intent",
+                        "po_agent/cli.py · run --intent, benchmark --intent"]},
+    "knowledge": {"title": "Enterprise knowledge", "kind": "file",
+                  "what": "The MCP server over the catalogue: personas, capabilities, channels, policies, "
+                          "existing features, services. Authoritative data comes from here, never from a model.",
+                  "impl": [("po_agent/knowledge/server.py · get_capabilities, get_channels, get_personas, "
+                            "search_policies, get_existing_features, get_services"),
+                           "po_agent/knowledge/data/catalogue.yaml · the catalogue",
+                           "po_agent/knowledge/client.py · MCPKnowledge, StaticKnowledge"]},
+    "prd": {"title": "PRD and node results", "kind": "file",
+            "what": "What a run leaves behind: the PRD, per-node results with engine, tokens, cost, latency and "
+                    "decision evidence, the final state, and the trace id.",
+            "impl": ["po_agent/runner.py · run_variant, write_results",
+                     "results/<experiment>/<run>/ · prd.md, node-results.json, metrics.json, state.json, trace-id"]},
+}
+
+
+def inline_code(s: str) -> str:
+    """Escape a table cell and turn `code` and *emphasis* spans into <code> and <em>."""
+    return re.sub(r"\*([^*]+)\*", r"<em>\1</em>", re.sub(r"`([^`]+)`", r"<code>\1</code>", esc(s)))
+
+
+def node_table(md: str) -> dict[str, dict]:
+    """The node table of docs/graph.md as {name: {column: cell}}."""
+    section = md.split("## Node table", 1)[1].split("\n## ", 1)[0]
+    rows = [line for line in section.splitlines() if line.startswith("| ")]   # header + data; not |---|
+    headers = [h.strip() for h in rows[0].strip("|").split("|")]
+    out = {}
+    for line in rows[1:]:
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) != len(headers):
+            continue
+        row = dict(zip(headers, cells))
+        out[row["Node"].strip("`")] = row
+    return out
+
+
+class GraphFigure:
+    def __init__(self, spec: dict, md: str):
+        self.spec = spec
+        self.table = node_table(md)
+        self.loops = spec["loops"]
+        self.types = {n["name"]: n["type"] for n in spec["nodes"]}
+        self.cond = [e for e in spec["edges"] if e["branch"]]
+        self.side = {e["target"]: e["source"] for e in self.cond if e["branch"] != "proceed"}  # loop body -> gate
+        self.main = ["intent"] + [n["name"] for n in spec["nodes"] if n["name"] not in self.side] + ["prd"]
+        # execution order for prev/next in the drawer
+        self.order = []
+        for n in self.main:
+            self.order.append(n)
+            if n == "retrieve_knowledge":
+                self.order.append("knowledge")
+            self.order += [b for b, gate in self.side.items() if gate == n]
+        self.box: dict[str, tuple[float, float, float, float]] = {}
+        for i, n in enumerate(self.main):
+            self.box[n] = (GX, 70 + i * GPITCH, GWID, GH)
+        for body, gate in self.side.items():
+            self.box[body] = (SIDE_X, self.box[gate][1], SIDE_W, GH)
+        self.box["knowledge"] = (LEFT_X, self.box["retrieve_knowledge"][1], SIDE_W, GH)
+        self.height = 70 + len(self.main) * GPITCH - GPITCH + GH + 24
+
+    # -- text --------------------------------------------------------------------------------------
+    def kind(self, n: str) -> str:
+        return PSEUDO[n]["kind"] if n in PSEUDO else KIND_OF_TYPE[self.types[n]]
+
+    def title(self, n: str) -> str:
+        if n in PSEUDO:
+            return PSEUDO[n]["title"]
+        label = NODE_LABEL[n]
+        return label[0].upper() + label[1:]
+
+    def what(self, n: str) -> str:
+        return PSEUDO[n]["what"] if n in PSEUDO else self.table[n]["Responsibility"]
+
+    def impl(self, n: str) -> list[str]:
+        if n in PSEUDO:
+            return PSEUDO[n]["impl"]
+        t = self.types[n]
+        out = [f"po_agent/graph/nodes.py · Nodes.{n}"]
+        if t == "generative":
+            out.append(f"po_agent/graph/prompts/{n}.md · the prompt (system.md is shared)")
+            out.append("po_agent/engines/openrouter_llm.py · OpenRouterLLM.generate"
+                       + (" (Markdown, prd_max_tokens)" if n in ("construct_prd", "refine_prd") else " (strict JSON schema)"))
+        elif t == "bounded":
+            fn, thresholds = QUESTIONS_OF[n]
+            out.append(f"po_agent/graph/questions.py · {fn}")
+            out.append("po_agent/engines/llm_decider.py · LLMDecisionEngine (baseline) · po_agent/engines/jev.py · JevEngine (hybrid)")
+            out.append("po_agent/config.py · Thresholds." + ", ".join(thresholds))
+        elif t == "retrieval":
+            tools = self.table[n]["MCP"].replace("`", "")
+            out.append(f"po_agent/knowledge/server.py · {tools}")
+            out.append("po_agent/knowledge/client.py · MCPKnowledge.call")
+        if n in GATES:
+            fn, cap = GATES[n]
+            out.append(f"po_agent/graph/build.py · {fn} (the gate) · po_agent/config.py · Loops.{cap} = {self.loops[cap]}")
+        return out
+
+    def eyebrow(self, n: str) -> str:
+        k = self.kind(n)
+        if k == "bounded":
+            return "bounded · LLM in the baseline, Jev in the hybrid"
+        if k == "gen":
+            return "generative · LLM in both variants"
+        return KIND_CAPTION[k]
+
+    def data(self) -> dict:
+        out = {}
+        for n in self.order:
+            row = self.table.get(n)
+            d = {"title": self.title(n), "name": n if n not in PSEUDO else "", "kind": self.kind(n),
+                 "eyebrow": self.eyebrow(n), "what": inline_code(self.what(n)),
+                 "why": inline_code(row["Why this engine"]) if row else KIND_WORD[self.kind(n)],
+                 "impl": self.impl(n)}
+            if row:
+                d["reads"] = inline_code(row["Input (from state)"])
+                d["writes"] = inline_code(row["Output (to state)"])
+                d["telemetry"] = inline_code(row["Telemetry"])
+            out[n] = d
+        return out
+
+    # -- geometry ----------------------------------------------------------------------------------
+    def centre(self, n):
+        x, y, w, h = self.box[n]
+        return x + w / 2, y + h / 2
+
+    def cond_label(self, source: str, branch: str) -> str:
+        cap = self.loops[GATES[source][1]]
+        return {
+            ("assess_risks", "investigate"): f"flagged, attempt < {cap}",
+            ("assess_risks", "proceed"): "nothing flagged, or the cap reached",
+            ("check_coverage", "refine"): f"gaps, attempt < {cap}",
+            ("check_coverage", "proceed"): "covered, or the cap reached",
+            ("validate_prd", "refine"): f"failed, attempt < {cap}",
+            ("validate_prd", "proceed"): "passed, or the cap reached",
+        }.get((source, branch), branch)
+
+    def back_label(self, body: str) -> str:
+        return {"investigate_risks": "mitigated, restated", "refine_requirements": "merged requirements",
+                "refine_prd": "rewritten"}.get(body, "")
+
+    def edges(self) -> list[str]:
+        out = []
+
+        def path(d, label=None, lx=0, ly=0, anchor="start", dash=False, arrow=True):
+            cls = "g-edge dash" if dash else "g-edge"
+            out.append(f'<path class="{cls}" d="{d}" fill="none"{" marker-end=\'url(#g-ah)\'" if arrow else ""}></path>')
+            if label:
+                out.append(f'<text class="g-elabel" x="{lx:.1f}" y="{ly:.1f}" text-anchor="{anchor}">{esc(label)}</text>')
+
+        # the column: every edge between consecutive main nodes, conditional ones labelled from the loop caps
+        plain = {(e["source"], e["target"]) for e in self.spec["edges"] if not e["branch"]}
+        for a, b in zip(self.main, self.main[1:]):
+            x, y, w, h = self.box[a]
+            y2 = self.box[b][1]
+            cx = x + w / 2
+            cond = next((e for e in self.cond if e["source"] == a and e["target"] == b), None)
+            if cond:
+                label = self.cond_label(a, cond["branch"])
+            elif (a, b) in plain or a == "intent" or b == "prd":
+                label = EDGE_LABELS.get((a, b))
+            else:
+                raise ValueError(f"no edge {a} -> {b} in the compiled graph")
+            path(f"M{cx:.1f},{y + h} L{cx:.1f},{y2}", label, cx + 8, (y + h + y2) / 2 + 4)
+        # loops: out to the body on the gate's row, back on the row below it (or up to an earlier node)
+        for body, gate in self.side.items():
+            gx, gy, gw, gh = self.box[gate]
+            bx, by, bw, _ = self.box[body]
+            cy = gy + gh / 2
+            branch = next(e["branch"] for e in self.cond if e["target"] == body)
+            path(f"M{gx + gw},{cy - 10} L{bx},{cy - 10}", self.cond_label(gate, branch),
+                 (gx + gw + bx) / 2, cy - 16, "middle")
+            back = next(e["target"] for e in self.spec["edges"] if e["source"] == body)
+            if back == gate:
+                path(f"M{bx},{cy + 10} L{gx + gw},{cy + 10}", self.back_label(body), (gx + gw + bx) / 2, cy + 24, "middle")
+            else:
+                tx, ty, tw, th = self.box[back]
+                tcy = ty + th / 2
+                mx = bx + bw / 2
+                path(f"M{mx},{by} L{mx},{tcy} L{tx + tw},{tcy}", self.back_label(body), mx + 8, (by + tcy) / 2 + 4)
+        # the knowledge server feeds both retrieval nodes
+        kx, ky, kw, kh = self.box["knowledge"]
+        rx, ry, _, rh = self.box["retrieve_knowledge"]
+        path(f"M{kx + kw},{ry + rh / 2} L{rx},{ry + rh / 2}", "the catalogue",
+             (kx + kw + rx) / 2, ry + rh / 2 - 8, "middle", dash=True)
+        _, cy2 = self.centre("retrieve_constraints")
+        path(f"M{kx + kw / 2},{ky + kh} L{kx + kw / 2},{cy2} L{rx},{cy2}", "policies · features · services",
+             kx + kw / 2 + 8, (ky + kh + cy2) / 2 + 4, dash=True)
+        return out
+
+    def nodes(self) -> list[str]:
+        out = []
+        for n in self.order:
+            x, y, w, h = self.box[n]
+            k = self.kind(n)
+            aria = f"{self.title(n)}: {re.sub(r'`', '', self.what(n))}"
+            out.append(f'<g class="g-node k-{k}" data-id="{n}" tabindex="0" role="button" aria-haspopup="dialog" '
+                       f'aria-label="{esc(aria)}"><rect x="{x}" y="{y}" width="{w}" height="{h}" rx="9"></rect>'
+                       f'<text class="title" x="{x + 12}" y="{y + 24}">{esc(self.title(n))}</text>'
+                       f'<text class="kind" x="{x + 12}" y="{y + 44}">{esc(KIND_CAPTION[k])}</text></g>')
+        return out
+
+    def lanes(self) -> list[str]:
+        return [f'<text class="g-lane" x="{GX - 16}" y="{self.box[n][1] - 12}" text-anchor="end">{esc(label)}</text>'
+                for n, label in LANES.items() if n in self.box]
+
+    def svg(self) -> str:
+        return (f'<svg id="g-svg" viewBox="0 0 {GW} {self.height}" role="img" aria-label="The Product Owner graph, '
+                f'top to bottom: {len(self.types)} nodes, three gated loops to the right, the knowledge server to '
+                f'the left. Click a box for what it does and where it is implemented.">'
+                '<defs><marker id="g-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" '
+                'orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"></path></marker></defs>'
+                + "".join(self.lanes()) + "".join(self.edges()) + "".join(self.nodes()) + "</svg>")
+
+    def html(self) -> str:
+        bar = ('<div class="g-bar">'
+               '<span class="k-gen"><i></i>generative: the LLM writes, in both variants</span>'
+               '<span class="k-bounded"><i></i>bounded: LLM in the baseline, Jev in the hybrid</span>'
+               '<span class="k-mcp"><i></i>retrieval over MCP</span>'
+               '<span class="k-det"><i></i>deterministic code</span>'
+               '<span class="k-file"><i></i>a file</span>'
+               '<span class="g-zoom"><label for="g-zoom">Zoom</label>'
+               '<input type="range" id="g-zoom" min="35" max="130" value="100" aria-label="Zoom the diagram">'
+               '<button type="button" id="g-fit">Fit</button><button type="button" id="g-full">100 %</button></span></div>')
+        drawer = ('<div class="g-scrim" id="g-scrim"></div>'
+                  '<aside class="g-drawer" id="g-drawer" role="dialog" aria-modal="false" aria-labelledby="g-dtitle" aria-hidden="true">'
+                  '<div class="stripe"></div>'
+                  '<div class="head"><div><div class="eyebrow" id="g-dkind"></div><h2 id="g-dtitle"></h2><code id="g-dname"></code></div>'
+                  '<button type="button" class="close" id="g-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" '
+                  'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">'
+                  '<path d="M3 3l10 10M13 3L3 13"></path></svg></button></div>'
+                  '<div class="body"><div><p class="what" id="g-dwhat"></p><p class="kindword" id="g-dwhy"></p></div>'
+                  '<div id="g-dstate"><h3>Reads, then writes</h3><p class="io" id="g-dreads"></p><p class="io" id="g-dwrites"></p></div>'
+                  '<div><h3>Implemented by</h3><ul id="g-dimpl"></ul></div>'
+                  '<div id="g-dtel"><h3>Telemetry</h3><p class="io" id="g-dtelemetry"></p></div></div>'
+                  '<div class="nav"><button type="button" id="g-prev"><span>Before</span><em id="g-prevt"></em></button>'
+                  '<button type="button" id="g-next"><span>After</span><em id="g-nextt"></em></button></div></aside>')
+        script = GRAPH_JS.replace("__DATA__", json.dumps(self.data())).replace("__ORDER__", json.dumps(self.order)) \
+            .replace("__W__", str(GW)).replace("__H__", str(self.height))
+        return (f'<div class="g-wide">{bar}<div class="g-fig" id="g-fig">{self.svg()}</div></div>'
+                f'{drawer}<script>{script}</script>')
+
+
+GRAPH_JS = r"""
+(function () {
+  var DATA = __DATA__, ORDER = __ORDER__, W = __W__, H = __H__;
+  var body = document.body, drawer = document.getElementById("g-drawer"), fig = document.getElementById("g-fig");
+  var current = null, opener = null;
+  function esc(s) { return s.replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function implHtml(i) { var p = i.split(" · "); return p.length > 1 ? "<b>" + esc(p[0]) + "</b> · " + esc(p.slice(1).join(" · ")) : "<b>" + esc(i) + "</b>"; }
+  function show(id, from) {
+    var n = DATA[id]; if (!n) return;
+    current = id; if (from) opener = from;
+    document.querySelectorAll(".is-lit").forEach(function (el) { el.classList.remove("is-lit"); });
+    document.querySelectorAll('[data-id="' + id + '"]').forEach(function (el) { el.classList.add("is-lit"); });
+    drawer.className = "g-drawer k-" + n.kind;
+    document.getElementById("g-dkind").textContent = n.eyebrow;
+    document.getElementById("g-dtitle").textContent = n.title;
+    document.getElementById("g-dname").textContent = n.name;
+    document.getElementById("g-dname").style.display = n.name ? "" : "none";
+    document.getElementById("g-dwhat").innerHTML = n.what;
+    document.getElementById("g-dwhy").innerHTML = n.why;
+    document.getElementById("g-dstate").style.display = n.reads ? "" : "none";
+    document.getElementById("g-dreads").innerHTML = n.reads ? "<span>reads</span> " + n.reads : "";
+    document.getElementById("g-dwrites").innerHTML = n.writes ? "<span>writes</span> " + n.writes : "";
+    document.getElementById("g-dimpl").innerHTML = n.impl.map(function (i) { return "<li>" + implHtml(i) + "</li>"; }).join("");
+    document.getElementById("g-dtel").style.display = n.telemetry ? "" : "none";
+    document.getElementById("g-dtelemetry").innerHTML = n.telemetry || "";
+    var k = ORDER.indexOf(id);
+    var p = ORDER[(k + ORDER.length - 1) % ORDER.length], nx = ORDER[(k + 1) % ORDER.length];
+    document.getElementById("g-prevt").textContent = DATA[p].title;
+    document.getElementById("g-nextt").textContent = DATA[nx].title;
+    document.getElementById("g-prev").onclick = function () { show(p); };
+    document.getElementById("g-next").onclick = function () { show(nx); };
+    drawer.setAttribute("aria-hidden", "false");
+    body.classList.add("g-open");
+    try { if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id); } catch (e) {}
+    // bring the box into view inside the figure without moving the page (a table row may have opened it)
+    var node = fig.querySelector('.g-node[data-id="' + id + '"]');
+    if (node) {
+      var r = node.getBoundingClientRect(), f = fig.getBoundingClientRect();
+      if (r.top < f.top) fig.scrollTop -= f.top - r.top + 16; else if (r.bottom > f.bottom) fig.scrollTop += r.bottom - f.bottom + 16;
+      if (r.left < f.left) fig.scrollLeft -= f.left - r.left + 16; else if (r.right > f.right) fig.scrollLeft += r.right - f.right + 16;
+    }
+  }
+  function close() {
+    body.classList.remove("g-open"); drawer.setAttribute("aria-hidden", "true");
+    if (opener && opener.focus) opener.focus();
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  }
+  // delegated, so the node table further down the page opens the drawer too
+  function target(ev) { var el = ev.target.closest ? ev.target.closest("[data-id]") : null; return el && DATA[el.getAttribute("data-id")] ? el : null; }
+  document.addEventListener("click", function (ev) { var el = target(ev); if (el) show(el.getAttribute("data-id"), el); });
+  document.addEventListener("keydown", function (ev) {
+    var el = target(ev);
+    if (el && (ev.key === "Enter" || ev.key === " ")) { ev.preventDefault(); show(el.getAttribute("data-id"), el); }
+  });
+  document.getElementById("g-close").addEventListener("click", close);
+  document.getElementById("g-scrim").addEventListener("click", close);
+  document.addEventListener("keydown", function (ev) {
+    if (!body.classList.contains("g-open")) return;
+    if (ev.key === "Escape") close();
+    if (ev.key === "ArrowDown" || ev.key === "ArrowRight") { ev.preventDefault(); document.getElementById("g-next").click(); }
+    if (ev.key === "ArrowUp" || ev.key === "ArrowLeft") { ev.preventDefault(); document.getElementById("g-prev").click(); }
+  });
+  // zoom: the diagram is drawn W px wide; "Fit" shows the whole of it in the window's height
+  var zoom = document.getElementById("g-zoom");
+  function setZoom(pct) { zoom.value = pct; fig.style.setProperty("--w", (W * pct / 100) + "px"); }
+  function fit() {
+    var avail = Math.max(320, window.innerHeight - 40 - 26);
+    setZoom(Math.max(35, Math.min(130, Math.floor(100 * avail / H))));
+  }
+  zoom.addEventListener("input", function () { setZoom(+zoom.value); });
+  document.getElementById("g-fit").addEventListener("click", fit);
+  document.getElementById("g-full").addEventListener("click", function () { setZoom(100); });
+  setZoom(Math.max(35, Math.min(100, Math.floor(100 * (fig.clientWidth - 24) / W))));
+  var h = (location.hash || "").slice(1);
+  if (h && DATA[h]) show(h);
+})();
+"""
+
+GRAPH_CSS = """
+/* the graph figure: escapes .prose to the full content width */
+.g-wide{width:calc(min(1120px,100vw) - 2rem);max-width:none;margin:1.2rem 0 2.2rem}
+.g-bar{display:flex;gap:.6rem 1.3rem;flex-wrap:wrap;margin:0 0 .7rem;font-size:.86rem;color:var(--ink-2);align-items:center}
+.g-bar i{display:inline-block;width:13px;height:13px;border-radius:3px;vertical-align:-2px;margin-right:.4rem;border:1.5px solid}
+.g-bar .k-gen i{background:var(--g-gen-soft);border-color:var(--llm)}
+.g-bar .k-bounded i{background:var(--g-bounded-soft);border-color:var(--jev)}
+.g-bar .k-mcp i{background:var(--g-mcp-soft);border-color:var(--mcp)}
+.g-bar .k-det i{background:var(--g-det-soft);border-color:var(--muted);border-style:dashed}
+.g-bar .k-file i{background:var(--hair-2);border-color:var(--hair)}
+.g-zoom{margin-left:auto;display:flex;align-items:center;gap:.5rem}
+.g-zoom label{font-size:.86rem;color:var(--ink-2)}
+.g-zoom input[type=range]{width:130px;accent-color:var(--llm)}
+.g-zoom button,.g-drawer .nav button,.g-drawer .close{font:500 .86rem var(--font);color:var(--ink);background:var(--surface);border:1px solid var(--hair);border-radius:6px;padding:.3rem .6rem;cursor:pointer}
+.g-zoom button:hover,.g-drawer .nav button:hover,.g-drawer .close:hover{background:var(--hair-2)}
+.g-fig{background:var(--surface);border:1px solid var(--hair);border-radius:10px;padding:12px;overflow:auto;max-height:calc(100vh - 40px)}
+.g-fig svg{display:block;width:var(--w,100%);max-width:none;height:auto;margin:0 auto;font-family:var(--font)}
+.g-fig text{fill:var(--ink)}
+.g-lane{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;fill:var(--muted)}
+.g-edge{stroke:var(--muted);stroke-width:1.4;color:var(--muted)}
+.g-edge.dash{stroke-dasharray:3 4;stroke-width:1.1}
+.g-elabel{font-size:11px;fill:var(--ink-2)}
+.g-node{cursor:pointer}
+.g-node rect{stroke-width:1.5;transition:stroke-width .15s}
+.g-node.k-gen rect{fill:var(--g-gen-soft);stroke:var(--llm)}
+.g-node.k-bounded rect{fill:var(--g-bounded-soft);stroke:var(--jev);stroke-width:2}
+.g-node.k-mcp rect{fill:var(--g-mcp-soft);stroke:var(--mcp)}
+.g-node.k-det rect{fill:var(--g-det-soft);stroke:var(--muted);stroke-dasharray:4 3}
+.g-node.k-file rect{fill:var(--hair-2);stroke:var(--hair)}
+.g-node .title{font-size:14px;font-weight:700}
+.g-node .kind{font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;fill:var(--ink-2)}
+.g-node.k-gen .kind{fill:var(--llm)} .g-node.k-bounded .kind{fill:var(--jev)} .g-node.k-mcp .kind{fill:var(--mcp)}
+.g-node:hover rect{filter:brightness(.96)}
+.g-node.is-lit rect,.g-node:focus-visible rect{stroke:var(--ink);stroke-width:3;stroke-dasharray:none}
+.g-node:focus-visible{outline:none}
+tbody tr[data-id]{cursor:pointer} tbody tr.is-lit td{background:var(--hair-2)} tbody tr.is-lit td:first-child{box-shadow:inset 4px 0 0 var(--jev)}
+/* the drawer */
+.g-scrim{position:fixed;inset:0;background:rgba(21,33,58,.28);opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
+.g-drawer{position:fixed;top:0;right:0;bottom:0;width:min(460px,100%);background:var(--surface);box-shadow:0 0 0 1px var(--hair),-24px 0 60px -30px rgba(0,0,0,.45);transform:translateX(104%);transition:transform .28s cubic-bezier(.2,.8,.2,1);z-index:21;display:flex;flex-direction:column;font-size:.92rem}
+body.g-open .g-scrim{opacity:1;pointer-events:auto}
+body.g-open .g-drawer{transform:none}
+.g-drawer .stripe{height:6px;background:var(--muted);flex:none}
+.g-drawer.k-gen .stripe{background:var(--llm)} .g-drawer.k-bounded .stripe{background:var(--jev)} .g-drawer.k-mcp .stripe{background:var(--mcp)}
+.g-drawer .head{display:flex;align-items:flex-start;gap:12px;padding:1.3rem 1.4rem 0}
+.g-drawer .head>div{flex:1;min-width:0}
+.g-drawer .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);margin-bottom:.4rem}
+.g-drawer.k-gen .eyebrow{color:var(--llm)} .g-drawer.k-bounded .eyebrow{color:var(--jev)}
+.g-drawer h2{font-size:1.5rem;line-height:1.15;margin:0;padding:0;border:0;letter-spacing:-.02em}
+.g-drawer .head code{display:inline-block;margin-top:.4rem;font-size:.8rem}
+.g-drawer .close{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;padding:0}
+.g-drawer .body{padding:1.1rem 1.4rem 1.6rem;overflow-y:auto;display:grid;gap:1.3rem;align-content:start}
+.g-drawer .what{font-size:1.05rem;line-height:1.5;margin:0}
+.g-drawer .kindword{color:var(--ink-2);font-size:.9rem;margin:.4rem 0 0}
+.g-drawer h3{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 .5rem}
+.g-drawer .io{margin:0 0 .3rem;color:var(--ink-2);font-size:.88rem;line-height:1.55}
+.g-drawer .io span{display:inline-block;min-width:3.2em;font-weight:700;color:var(--ink)}
+.g-drawer ul{margin:0;padding:0;list-style:none;display:grid;gap:.4rem}
+.g-drawer li{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.78rem;line-height:1.45;padding:.45rem .7rem;background:var(--hair-2);border-radius:8px;overflow-wrap:anywhere;max-width:none}
+.g-drawer li b{font-weight:600;color:var(--ink)}
+.g-drawer.k-gen li b{color:var(--llm)} .g-drawer.k-bounded li b{color:var(--jev)}
+.g-drawer .nav{display:flex;gap:.5rem;justify-content:space-between;padding:0 1.4rem 1.3rem;margin-top:auto}
+.g-drawer .nav button{padding:.5rem .8rem;max-width:48%;text-align:left;border-radius:8px}
+.g-drawer .nav button span{display:block;font-size:.68rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.g-drawer .nav button em{font-style:normal;font-weight:600}
+.g-drawer .nav button:last-child{text-align:right}
+@media (max-width:720px){
+  .g-drawer{top:auto;left:0;width:100%;max-height:82vh;border-radius:16px 16px 0 0;transform:translateY(104%)}
+  .g-zoom{margin-left:0}
+}
+"""
+
+CSS += GRAPH_CSS
+
+
 # --- rendering ----------------------------------------------------------------------------------
 
 
-def render(md: str, charts: Charts | None) -> str:
+def render(md: str, charts: Charts | None, graph: dict | None = None) -> str:
+    src = md
     blocks: list[str] = []
 
     def stash(m: re.Match) -> str:
@@ -468,9 +917,12 @@ def render(md: str, charts: Charts | None) -> str:
     htmls: list[str] = []
 
     def chart(m: re.Match) -> str:
+        kind = m.group(1)
+        if kind == "graph":
+            htmls.append(GraphFigure(graph, src).html() if graph else "")
+            return f"\n\n@@HTML{len(htmls) - 1}@@\n\n"
         if charts is None:
             return ""
-        kind = m.group(1)
         out = {"hero": charts.hero, "chart:race": charts.race_figure, "chart:latency": lambda: charts.paired("latency"),
                "chart:cost": lambda: charts.paired("cost"), "chart:composition": charts.composition,
                "chart:consistency": charts.consistency, "chart:quality": charts.quality}[kind]()
@@ -483,6 +935,8 @@ def render(md: str, charts: Charts | None) -> str:
         body = body.replace(f"<p>@@MERMAID{i}@@</p>", f'<pre class="mermaid">{html.escape(src)}</pre>')
     for i, h in enumerate(htmls):
         body = body.replace(f"<p>@@HTML{i}@@</p>", h)
+    if graph and "{{graph}}" in src:   # node-table rows open the same drawer as the boxes
+        body = re.sub(r"<tr>(\s*<td>\d+</td>\s*<td><code>([a-z_]+)</code></td>)", r'<tr data-id="\2" tabindex="0">\1', body)
     return re.sub(r'href="([^":#]+)\.md(#[^"]*)?"', r'href="\1.html\2"', body)
 
 
@@ -508,6 +962,7 @@ def main(argv=None) -> int:
         shutil.rmtree(out)
     out.mkdir(parents=True)
     charts = Charts(json.loads(DATA.read_text())) if DATA.exists() else None
+    graph = json.loads(GRAPH_DATA.read_text()) if GRAPH_DATA.exists() else None
     pages = {p.stem: p for p in DOCS.glob("*.md")}
     names = [n for n in ORDER if n in pages] + sorted(n for n in pages if n not in ORDER)
     titles = {n: title_of(pages[n].read_text(), n.replace("-", " ").title()) for n in names}
@@ -516,7 +971,7 @@ def main(argv=None) -> int:
         src = pages[n].read_text()
         nav = "".join(f'<a class="item{" current" if m == n else ""}" href="{m}.html">{esc(NAV_TITLES.get(m, titles[m]))}</a>'
                       for m in names if m != "index")
-        body = render(src, charts)
+        body = render(src, charts, graph)
         if n != "index":
             body = f'<div class="prose">{body}</div>'
         footer = (f'Product Owner agent benchmark · experiment {esc(exp)} · '
@@ -527,9 +982,10 @@ def main(argv=None) -> int:
     for pattern in ("*.png", "*.jpg", "*.svg"):
         for extra in DOCS.glob(pattern):
             shutil.copy(extra, out / extra.name)
-    if DATA.exists():
-        (out / "data").mkdir(exist_ok=True)
-        shutil.copy(DATA, out / "data" / DATA.name)
+    (out / "data").mkdir(exist_ok=True)
+    for data in (DATA, GRAPH_DATA):
+        if data.exists():
+            shutil.copy(data, out / "data" / data.name)
     (out / ".nojekyll").write_text("")
     print(f"built {len(names)} pages into {out}/: {', '.join(names)}")
     return 0

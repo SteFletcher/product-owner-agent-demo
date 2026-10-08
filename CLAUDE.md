@@ -16,7 +16,7 @@ make lint                  # ruff
 make run-hybrid INTENT=examples/example-intent.md     # one real run (~3–5 min, a few cents)
 make run-llm
 make benchmark RUNS=3 REPEATS=5                       # both variants ×3, blind judge, consistency replay
-make graph                 # Mermaid from the compiled graph
+make graph                 # Mermaid on stdout + docs/data/graph.json, from the compiled graph
 make dashboard             # regenerate grafana/po-benchmark.json and push to Grafana (:3001)
 .venv/bin/python -m pytest tests/test_graph.py -k risk_loop   # one test
 ```
@@ -40,7 +40,7 @@ Invariants worth keeping:
 
 ## Docs and Pages
 
-`docs/*.md` (Mermaid allowed) are built by `tools/builddocs.py` into HTML and published by `.github/workflows/pages.yml` on pushes to `main` touching `docs/`. The build generates the charts as inline SVG from `docs/data/comparison.json` (copy a new experiment's `comparison.json` there to refresh them) via placeholders such as `{{hero}}` and `{{chart:latency}}` listed in the script's docstring. Data colours are blue `#2a78d6` (LLM) and orange `#eb6834` (Jev), validated for colour-vision deficiency; keep Mermaid `classDef`s on the same palette. Site: https://stefletcher.github.io/product-owner-agent-demo/. Check a deploy with `gh run list -w pages -L1`.
+`docs/*.md` (Mermaid allowed) are built by `tools/builddocs.py` into HTML and published by `.github/workflows/pages.yml` on pushes to `main` touching `docs/`. The build generates the charts as inline SVG from `docs/data/comparison.json` (copy a new experiment's `comparison.json` there to refresh them) via placeholders such as `{{hero}}` and `{{chart:latency}}` listed in the script's docstring. The graph page's diagram is `{{graph}}`: an explorable SVG (click a box or a node-table row for a detail drawer) drawn from `docs/data/graph.json`, which `make graph` writes from the compiled graph; a test fails if that file or the node table in `docs/graph.md` drifts from `po_agent/graph/nodes.py`. The drawer's text comes from the node table, so edit prose there, not in the builder. Data colours are blue `#2a78d6` (LLM) and orange `#eb6834` (Jev), validated for colour-vision deficiency; keep Mermaid `classDef`s on the same palette. Site: https://stefletcher.github.io/product-owner-agent-demo/. Check a deploy with `gh run list -w pages -L1`.
 
 ## Local observability stack
 

@@ -2,45 +2,14 @@
 
 ## Diagram
 
-```mermaid
-flowchart TD
-    START([Intent document]) --> parse_intent
-    parse_intent --> retrieve_knowledge
-    retrieve_knowledge -. MCP: capabilities, channels, personas .-> retrieve_knowledge
-    retrieve_knowledge --> select_capabilities
-    select_capabilities --> select_personas
-    select_personas --> identify_outcomes
-    identify_outcomes --> retrieve_constraints
-    retrieve_constraints -. MCP: policies, existing features, services .-> retrieve_constraints
-    retrieve_constraints --> assess_constraints
-    assess_constraints --> discover_risks
-    discover_risks --> assess_risks
-    assess_risks -- "high or uncertain risks<br/>and attempt < 2" --> investigate_risks
-    investigate_risks --> assess_risks
-    assess_risks -- "otherwise" --> generate_requirements
-    generate_requirements --> classify_requirements
-    classify_requirements --> check_coverage
-    check_coverage -- "gaps and attempt < 3" --> refine_requirements
-    refine_requirements --> classify_requirements
-    check_coverage -- "covered" --> construct_prd
-    construct_prd --> validate_prd
-    validate_prd -- "failed and attempt < 2" --> refine_prd
-    refine_prd --> validate_prd
-    validate_prd -- "passed or cap reached" --> finalise
-    finalise --> DONE([PRD + node results])
+{{graph}}
 
-    classDef gen fill:#2a78d6,color:#fff,stroke:none
-    classDef bounded fill:#eb6834,color:#fff,stroke:none
-    classDef mcp fill:#8a909c,color:#fff,stroke:none
-    classDef det fill:#c3c7cf,color:#15213a,stroke:none
-    class parse_intent,identify_outcomes,discover_risks,investigate_risks,generate_requirements,refine_requirements,construct_prd,refine_prd gen
-    class select_capabilities,select_personas,assess_constraints,assess_risks,classify_requirements,check_coverage,validate_prd bounded
-    class retrieve_knowledge,retrieve_constraints mcp
-    class finalise det
-```
-
-Blue = generative (LLM in both variants). Orange = bounded (LLM in baseline, Jev in hybrid).
-Grey = retrieval over MCP. Light grey = deterministic.
+Top to bottom, in the order a run visits the nodes: loop bodies sit to the right of the gate that
+sends work to them, the knowledge server to the left of the nodes that call it. Click a box, or a
+row of the node table below, for what it decides, what it reads and writes, and the file and
+function that implement it. Arrows carry what passes along them. The diagram is drawn from the
+compiled graph (`make graph` writes `docs/data/graph.json`; a test keeps it current), so it cannot
+drift from the code.
 
 Three loops, each with a hard cap so a run always terminates:
 

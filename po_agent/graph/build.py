@@ -61,13 +61,33 @@ def build_graph(ctx: RunContext, nodes: Nodes | None = None):
     return g.compile()
 
 
-def mermaid() -> str:
-    """The graph as Mermaid, from the compiled graph itself, so docs cannot drift from code."""
+def _doc_context() -> RunContext:
+    """A context with no live engines, enough to compile the graph for documentation."""
     from unittest.mock import MagicMock
 
     from ..config import Settings
     settings = Settings(llm={"model": "x"}, jev={}, judge={"model": "x"})
-    ctx = RunContext(settings=settings, llm=MagicMock(), decider=MagicMock(engine_type="jev", model="jev"),
-                     knowledge=MagicMock(), telemetry=MagicMock(), variant="hybrid", experiment_id="",
-                     run_id="")
-    return build_graph(ctx).get_graph().draw_mermaid()
+    return RunContext(settings=settings, llm=MagicMock(), decider=MagicMock(engine_type="jev", model="jev"),
+                      knowledge=MagicMock(), telemetry=MagicMock(), variant="hybrid", experiment_id="",
+                      run_id="")
+
+
+def mermaid() -> str:
+    """The graph as Mermaid, from the compiled graph itself, so docs cannot drift from code."""
+    return build_graph(_doc_context()).get_graph().draw_mermaid()
+
+
+def graph_spec() -> dict:
+    """The graph as data for the docs site (docs/data/graph.json): every node with its type and
+    the state it hashes as input, every edge with its branch name when conditional, and the loop
+    caps. Written by `po-agent graph --json`; a test keeps the checked-in copy equal to this."""
+    ctx = _doc_context()
+    nodes = Nodes(ctx)
+    g = build_graph(ctx, nodes).get_graph()
+    return {
+        "nodes": [{"name": s.name, "type": s.node_type, "inputs": list(s.inputs), "attempt_key": s.attempt_key}
+                  for s in nodes.specs.values()],
+        "edges": [{"source": e.source, "target": e.target, "branch": e.data if e.conditional else None}
+                  for e in g.edges],
+        "loops": ctx.settings.loops.model_dump(),
+    }

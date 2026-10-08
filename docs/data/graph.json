@@ -1,0 +1,304 @@
+{
+ "nodes": [
+  {
+   "name": "parse_intent",
+   "type": "generative",
+   "inputs": [
+    "intent_text"
+   ],
+   "attempt_key": null
+  },
+  {
+   "name": "retrieve_knowledge",
+   "type": "retrieval",
+   "inputs": [
+    "brief"
+   ],
+   "attempt_key": null
+  },
+  {
+   "name": "select_capabilities",
+   "type": "bounded",
+   "inputs": [
+    "brief",
+    "catalogue"
+   ],
+   "attempt_key": null
+  },
+  {
+   "name": "select_personas",
+   "type": "bounded",
+   "inputs": [
+    "brief",
+    "capability_selections",
+    "catalogue"
+   ],
+   "attempt_key": null
+  },
+  {
+   "name": "identify_outcomes",
+   "type": "generative",
+   "inputs": [
+    "brief",
+    "persona_selections"
+   ],
+   "attempt_key": null
+  },
+  {
+   "name": "retrieve_constraints",
+   "type": "retrieval",
+   "inputs": [
+    "capability_selections"
+   ],
+   "attempt_key": null
+  },
+  {
+   "name": "assess_constraints",
+   "type": "bounded",
+   "inputs": [
+    "brief",
+    "capability_selections",
+    "catalogue"
+   ],
+   "attempt_key": null
+  },
+  {
+   "name": "discover_risks",
+   "type": "generative",
+   "inputs": [
+    "brief",
+    "persona_selections",
+    "policy_assessments",
+    "catalogue"
+   ],
+   "attempt_key": null
+  },
+  {
+   "name": "assess_risks",
+   "type": "bounded",
+   "inputs": [
+    "brief",
+    "risks"
+   ],
+   "attempt_key": "risk_attempt"
+  },
+  {
+   "name": "investigate_risks",
+   "type": "generative",
+   "inputs": [
+    "brief",
+    "risks",
+    "catalogue"
+   ],
+   "attempt_key": null
+  },
+  {
+   "name": "generate_requirements",
+   "type": "generative",
+   "inputs": [
+    "brief",
+    "persona_selections",
+    "outcomes",
+    "risks",
+    "policy_assessments",
+    "feature_overlaps",
+    "catalogue"
+   ],
+   "attempt_key": null
+  },
+  {
+   "name": "classify_requirements",
+   "type": "bounded",
+   "inputs": [
+    "brief",
+    "requirements",
+    "feature_overlaps"
+   ],
+   "attempt_key": "requirement_attempt"
+  },
+  {
+   "name": "check_coverage",
+   "type": "bounded",
+   "inputs": [
+    "brief",
+    "requirements",
+    "persona_selections",
+    "outcomes"
+   ],
+   "attempt_key": null
+  },
+  {
+   "name": "refine_requirements",
+   "type": "generative",
+   "inputs": [
+    "coverage",
+    "requirements",
+    "brief",
+    "persona_selections",
+    "outcomes"
+   ],
+   "attempt_key": null
+  },
+  {
+   "name": "construct_prd",
+   "type": "generative",
+   "inputs": [
+    "brief",
+    "persona_selections",
+    "outcomes",
+    "requirements",
+    "risks",
+    "policy_assessments",
+    "feature_overlaps",
+    "catalogue"
+   ],
+   "attempt_key": null
+  },
+  {
+   "name": "validate_prd",
+   "type": "bounded",
+   "inputs": [
+    "prd_markdown",
+    "brief",
+    "requirements",
+    "persona_selections",
+    "risks"
+   ],
+   "attempt_key": "prd_attempt"
+  },
+  {
+   "name": "refine_prd",
+   "type": "generative",
+   "inputs": [
+    "prd_markdown",
+    "validation"
+   ],
+   "attempt_key": null
+  },
+  {
+   "name": "finalise",
+   "type": "deterministic",
+   "inputs": [
+    "prd_markdown"
+   ],
+   "attempt_key": null
+  }
+ ],
+ "edges": [
+  {
+   "source": "__start__",
+   "target": "parse_intent",
+   "branch": null
+  },
+  {
+   "source": "assess_constraints",
+   "target": "discover_risks",
+   "branch": null
+  },
+  {
+   "source": "assess_risks",
+   "target": "generate_requirements",
+   "branch": "proceed"
+  },
+  {
+   "source": "assess_risks",
+   "target": "investigate_risks",
+   "branch": "investigate"
+  },
+  {
+   "source": "check_coverage",
+   "target": "construct_prd",
+   "branch": "proceed"
+  },
+  {
+   "source": "check_coverage",
+   "target": "refine_requirements",
+   "branch": "refine"
+  },
+  {
+   "source": "classify_requirements",
+   "target": "check_coverage",
+   "branch": null
+  },
+  {
+   "source": "construct_prd",
+   "target": "validate_prd",
+   "branch": null
+  },
+  {
+   "source": "discover_risks",
+   "target": "assess_risks",
+   "branch": null
+  },
+  {
+   "source": "generate_requirements",
+   "target": "classify_requirements",
+   "branch": null
+  },
+  {
+   "source": "identify_outcomes",
+   "target": "retrieve_constraints",
+   "branch": null
+  },
+  {
+   "source": "investigate_risks",
+   "target": "assess_risks",
+   "branch": null
+  },
+  {
+   "source": "parse_intent",
+   "target": "retrieve_knowledge",
+   "branch": null
+  },
+  {
+   "source": "refine_prd",
+   "target": "validate_prd",
+   "branch": null
+  },
+  {
+   "source": "refine_requirements",
+   "target": "classify_requirements",
+   "branch": null
+  },
+  {
+   "source": "retrieve_constraints",
+   "target": "assess_constraints",
+   "branch": null
+  },
+  {
+   "source": "retrieve_knowledge",
+   "target": "select_capabilities",
+   "branch": null
+  },
+  {
+   "source": "select_capabilities",
+   "target": "select_personas",
+   "branch": null
+  },
+  {
+   "source": "select_personas",
+   "target": "identify_outcomes",
+   "branch": null
+  },
+  {
+   "source": "validate_prd",
+   "target": "finalise",
+   "branch": "proceed"
+  },
+  {
+   "source": "validate_prd",
+   "target": "refine_prd",
+   "branch": "refine"
+  },
+  {
+   "source": "finalise",
+   "target": "__end__",
+   "branch": null
+  }
+ ],
+ "loops": {
+  "risk_attempts": 2,
+  "requirement_attempts": 3,
+  "prd_attempts": 2
+ }
+}

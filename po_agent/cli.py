@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import json
 import sys
 from pathlib import Path
 
@@ -172,8 +173,11 @@ def cmd_report(args) -> int:
 
 
 def cmd_graph(args) -> int:
-    from .graph.build import mermaid
+    from .graph.build import graph_spec, mermaid
     print(mermaid())
+    if args.json:
+        Path(args.json).write_text(json.dumps(graph_spec(), indent=1) + "\n")
+        print(f"wrote {args.json}", file=sys.stderr)
     return 0
 
 
@@ -196,7 +200,8 @@ def main(argv=None) -> int:
     b.add_argument("--out", default=None)
     b.add_argument("--seed", type=int, default=None)
     sub.add_parser("check")
-    sub.add_parser("graph")
+    gp = sub.add_parser("graph", help="print the graph as Mermaid; --json also writes it as data for the docs")
+    gp.add_argument("--json", default=None, metavar="PATH")
     rp = sub.add_parser("report", help="rebuild comparison.md from an experiment directory")
     rp.add_argument("experiment")
     jp = sub.add_parser("judge", help="blind-judge the PRD pairs in an experiment directory")

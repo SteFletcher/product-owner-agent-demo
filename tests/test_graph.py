@@ -142,3 +142,26 @@ async def test_adk_agent_wraps_the_graph(settings, telemetry, pricing, monkeypat
     record, meta = await run_via_adk(settings, pricing, telemetry, variant, INTENT, tmp_path)
     assert record.ok and meta["ok"] and meta["run_id"] == f"{variant}-01"
     assert (tmp_path / variant / "run-01" / "prd.md").read_text().startswith("---")
+
+
+# --- the docs stay in step with the code ------------------------------------------------------
+
+
+def test_checked_in_graph_data_matches_the_compiled_graph():
+    """docs/data/graph.json draws the diagram on the site; `make graph` regenerates it."""
+    import json
+    from pathlib import Path
+
+    from po_agent.graph.build import graph_spec
+    checked_in = json.loads((Path(__file__).parent.parent / "docs" / "data" / "graph.json").read_text())
+    assert checked_in == graph_spec(), "run `make graph` and commit docs/data/graph.json"
+
+
+def test_node_table_in_docs_lists_every_node_once(settings, telemetry):
+    import re
+    from pathlib import Path
+
+    md = (Path(__file__).parent.parent / "docs" / "graph.md").read_text()
+    table = md.split("## Node table", 1)[1].split("\n## ", 1)[0]
+    rows = re.findall(r"^\| \d+ \| `([a-z_]+)` \|", table, flags=re.MULTILINE)
+    assert rows == list(Nodes(make_ctx(settings, telemetry)).specs)

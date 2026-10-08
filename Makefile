@@ -37,8 +37,8 @@ test:  ## unit and graph-routing tests, offline
 lint:  ## ruff
 	$(PY) -m ruff check .
 
-graph:  ## the graph as Mermaid, generated from the code
-	$(PY) -m po_agent.cli graph
+graph:  ## the graph as Mermaid on stdout and as docs/data/graph.json, both generated from the code
+	$(PY) -m po_agent.cli graph --json docs/data/graph.json
 
 dashboard:  ## generate grafana/po-benchmark.json and push it to Grafana ($(GRAFANA))
 	$(PY) tools/gendashboard.py --push $(GRAFANA)
