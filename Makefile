@@ -40,6 +40,9 @@ lint:  ## ruff
 graph:  ## the graph as Mermaid on stdout and as docs/data/graph.json, both generated from the code
 	$(PY) -m po_agent.cli graph --json docs/data/graph.json
 
+examples:  ## docs/data/examples.json: the recorded payloads shown on the docs' "On the wire" page (EXPERIMENT=results/<id>, default newest)
+	$(PY) tools/genexamples.py $(if $(EXPERIMENT),--experiment $(EXPERIMENT),)
+
 dashboard:  ## generate grafana/po-benchmark.json and push it to Grafana ($(GRAFANA))
 	$(PY) tools/gendashboard.py --push $(GRAFANA)
 

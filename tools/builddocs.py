@@ -13,6 +13,8 @@ Markdown pages may use placeholders, each on its own line:
     {{chart:consistency}}    decision agreement per bounded node, per engine
     {{chart:quality}}        blind judge scores per rubric dimension
     {{graph}}                the explorable graph diagram (docs/graph.md only: its node table is the text)
+    {{example:key}}          a recorded payload from docs/data/examples.json (tools/genexamples.py) as a code
+                             block; {{example:a|b}} puts two side by side; {{census}} is the question census table
 Every chart ships with a table twin. Needs the `markdown` package only.
 """
 from __future__ import annotations
@@ -30,11 +32,12 @@ import markdown
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 DATA = DOCS / "data" / "comparison.json"
-ORDER = ["index", "executive-summary", "architecture", "graph", "engine-selection", "configuration",
+EXAMPLES = DOCS / "data" / "examples.json"
+ORDER = ["index", "executive-summary", "architecture", "graph", "engine-selection", "examples", "configuration",
          "benchmark", "benchmark-results"]
 NAV_TITLES = {"index": "Overview", "executive-summary": "Executive summary", "architecture": "Architecture",
-              "graph": "The graph", "engine-selection": "Engine selection", "configuration": "Configuration",
-              "benchmark": "Method", "benchmark-results": "Raw report"}
+              "graph": "The graph", "engine-selection": "Engine selection", "examples": "On the wire",
+              "configuration": "Configuration", "benchmark": "Method", "benchmark-results": "Raw report"}
 
 NODE_ORDER = ["parse_intent", "retrieve_knowledge", "select_capabilities", "select_personas", "identify_outcomes",
               "retrieve_constraints", "assess_constraints", "discover_risks", "assess_risks", "investigate_risks",
@@ -99,6 +102,15 @@ tr:hover td{background:var(--hair-2)}
 img{max-width:100%;height:auto;border:1px solid var(--hair);border-radius:8px}
 .mermaid{margin:1.2rem 0 2rem;overflow-x:auto}
 hr{border:0;border-top:1px solid var(--hair);margin:2.5rem 0}
+/* recorded payloads */
+figure.code{margin:1.2rem 0 1.8rem;max-width:none}
+figure.code figcaption{font-size:.86rem;font-weight:700;margin:0 0 .4rem;color:var(--ink-2);overflow-wrap:anywhere}
+figure.code pre{margin:0;max-height:34rem;overflow:auto;font-size:.8rem}
+figure.code .note{color:var(--muted);font-size:.84rem;margin:.4rem 0 0;max-width:none}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:1rem;width:calc(min(1120px,100vw) - 2rem);max-width:none;margin:1.2rem 0 1.8rem}
+.pair figure.code{margin:0;min-width:0}
+.pair figure.code pre{max-height:44rem}
+@media (max-width:900px){.pair{grid-template-columns:1fr;width:auto}}
 /* hero */
 .hero{padding:2.5rem 0 1rem}
 .hero .lede{font-size:1.2rem;color:var(--ink-2);max-width:62ch;margin:0 0 2rem;line-height:1.5}
@@ -905,7 +917,23 @@ CSS += GRAPH_CSS
 # --- rendering ----------------------------------------------------------------------------------
 
 
-def render(md: str, charts: Charts | None, graph: dict | None = None) -> str:
+def example_figure(ex: dict) -> str:
+    note = f'<p class="note">{inline_code(ex["note"])}</p>' if ex.get("note") else ""
+    return (f'<figure class="code"><figcaption>{esc(ex["title"])}</figcaption>'
+            f'<pre><code class="language-{esc(ex["lang"])}">{esc(ex["text"])}</code></pre>{note}</figure>')
+
+
+def census_table(census: dict) -> str:
+    rows = [[r["node"], r["per"], r["noul"] or "", r["choice"] or "", r["score"] or "", r["questions"], r["calls"]]
+            for r in census["rows"]]
+    tot = ["total", "", sum(r["noul"] for r in census["rows"]), sum(r["choice"] for r in census["rows"]),
+           sum(r["score"] for r in census["rows"]), sum(r["questions"] for r in census["rows"]),
+           sum(r["calls"] for r in census["rows"])]
+    return table(["node", "one set per", "noul", "choice", "score", "questions", f"calls ({census['chunk']} per call)"],
+                 rows + [tot])
+
+
+def render(md: str, charts: Charts | None, graph: dict | None = None, examples: dict | None = None) -> str:
     src = md
     blocks: list[str] = []
 
@@ -921,6 +949,15 @@ def render(md: str, charts: Charts | None, graph: dict | None = None) -> str:
         if kind == "graph":
             htmls.append(GraphFigure(graph, src).html() if graph else "")
             return f"\n\n@@HTML{len(htmls) - 1}@@\n\n"
+        if kind.startswith("example:") or kind == "census":
+            if not examples:
+                return ""
+            if kind == "census":
+                htmls.append(census_table(examples["census"]))
+            else:
+                figs = [example_figure(examples[k]) for k in kind.split(":", 1)[1].split("|")]
+                htmls.append(f'<div class="pair">{"".join(figs)}</div>' if len(figs) > 1 else figs[0])
+            return f"\n\n@@HTML{len(htmls) - 1}@@\n\n"
         if charts is None:
             return ""
         out = {"hero": charts.hero, "chart:race": charts.race_figure, "chart:latency": lambda: charts.paired("latency"),
@@ -928,7 +965,7 @@ def render(md: str, charts: Charts | None, graph: dict | None = None) -> str:
                "chart:consistency": charts.consistency, "chart:quality": charts.quality}[kind]()
         htmls.append(out)
         return f"\n\n@@HTML{len(htmls) - 1}@@\n\n"
-    md = re.sub(r"^\{\{([a-z:]+)\}\}\s*$", chart, md, flags=re.MULTILINE)
+    md = re.sub(r"^\{\{([a-z:_|]+)\}\}\s*$", chart, md, flags=re.MULTILINE)
 
     body = markdown.markdown(md, extensions=["tables", "fenced_code", "toc", "sane_lists", "attr_list"])
     for i, src in enumerate(blocks):
@@ -963,6 +1000,7 @@ def main(argv=None) -> int:
     out.mkdir(parents=True)
     charts = Charts(json.loads(DATA.read_text())) if DATA.exists() else None
     graph = json.loads(GRAPH_DATA.read_text()) if GRAPH_DATA.exists() else None
+    examples = json.loads(EXAMPLES.read_text()) if EXAMPLES.exists() else None
     pages = {p.stem: p for p in DOCS.glob("*.md")}
     names = [n for n in ORDER if n in pages] + sorted(n for n in pages if n not in ORDER)
     titles = {n: title_of(pages[n].read_text(), n.replace("-", " ").title()) for n in names}
@@ -971,7 +1009,7 @@ def main(argv=None) -> int:
         src = pages[n].read_text()
         nav = "".join(f'<a class="item{" current" if m == n else ""}" href="{m}.html">{esc(NAV_TITLES.get(m, titles[m]))}</a>'
                       for m in names if m != "index")
-        body = render(src, charts, graph)
+        body = render(src, charts, graph, examples)
         if n != "index":
             body = f'<div class="prose">{body}</div>'
         footer = (f'Product Owner agent benchmark · experiment {esc(exp)} · '
@@ -983,7 +1021,7 @@ def main(argv=None) -> int:
         for extra in DOCS.glob(pattern):
             shutil.copy(extra, out / extra.name)
     (out / "data").mkdir(exist_ok=True)
-    for data in (DATA, GRAPH_DATA):
+    for data in (DATA, GRAPH_DATA, EXAMPLES):
         if data.exists():
             shutil.copy(data, out / "data" / data.name)
     (out / ".nojekyll").write_text("")
