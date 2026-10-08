@@ -1,16 +1,15 @@
-# Product Owner agent: LLM vs LLM + Jev
+{{hero}}
 
-An experiment that measures what changes when the bounded decisions inside an agentic Product
-Owner workflow (intent document → PRD) are made by **Jev**, TypeSafe's System One decision model,
-instead of an LLM, while the writing stays with the LLM.
+## Read on
 
-- [Executive summary](executive-summary.md): measured cost, speed, consistency and quality deltas.
-- [Architecture](architecture.md): Google ADK → LangGraph → engines → MCP → OpenTelemetry.
-- [The graph](graph.md): 18 nodes, three gated loops, and the node-by-node engine table.
-- [Engine selection](engine-selection.md): how each node was classified, and the assumptions.
-- [Configuration](configuration.md): models, endpoints, thresholds, pricing, the MCP contract.
-- [Benchmark method](benchmark.md): what is measured, how, and what is deliberately kept apart.
-- [Benchmark results](benchmark-results.md): the raw report of the experiment behind the summary.
+<ul class="contents">
+<li><a href="executive-summary.html">Executive summary</a><span>The measured cost, speed, consistency and quality deltas, with the charts and what they do and do not show.</span></li>
+<li><a href="architecture.html">Architecture</a><span>Google ADK on the outside, LangGraph inside, engines behind protocols, enterprise knowledge over MCP, OpenTelemetry throughout.</span></li>
+<li><a href="graph.html">The graph</a><span>Eighteen nodes, three gated loops, and the node-by-node table of what each one does and which engine runs it.</span></li>
+<li><a href="engine-selection.html">Engine selection</a><span>How every node was classified as generative, bounded, retrieval or deterministic, and the assumptions behind the Jev integration.</span></li>
+<li><a href="configuration.html">Configuration</a><span>Models, endpoints, thresholds, pricing, and the MCP contract a real knowledge server must meet.</span></li>
+<li><a href="benchmark.html">Method</a><span>What is measured, how, and what is deliberately kept apart so the comparison stays honest.</span></li>
+<li><a href="benchmark-results.html">Raw report</a><span>The report exactly as the benchmark printed it.</span></li>
+</ul>
 
-Source and instructions to run it yourself:
-[github.com/SteFletcher/product-owner-agent-demo](https://github.com/SteFletcher/product-owner-agent-demo).
+Run it yourself: [github.com/SteFletcher/product-owner-agent-demo](https://github.com/SteFletcher/product-owner-agent-demo) — `make setup`, `make check`, `make benchmark`.

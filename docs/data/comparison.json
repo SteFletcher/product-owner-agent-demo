@@ -1,0 +1,2692 @@
+{
+ "experiment_id": "20261008-113335-6db897",
+ "intent": "results/20261008-113335-6db897/intent.md",
+ "runs": 3,
+ "variants": [
+  "llm",
+  "hybrid"
+ ],
+ "wall_time_s": null,
+ "config": {
+  "llm_model": "anthropic/claude-haiku-4.5",
+  "decision_model": "anthropic/claude-haiku-4.5",
+  "jev_model": "typesafe/jev-1.13",
+  "judge_model": "anthropic/claude-sonnet-5"
+ },
+ "variants_summary": {
+  "llm": {
+   "runs": 1,
+   "succeeded": 1,
+   "failure_rate": 0.0,
+   "partial_runs": 2,
+   "errors": [],
+   "total_latency_ms": {
+    "n": 1,
+    "mean": 283795.0,
+    "median": 283795.0,
+    "p95": 283795.0,
+    "min": 283795.0,
+    "max": 283795.0,
+    "variance": 0.0
+   },
+   "llm_calls": {
+    "n": 1,
+    "mean": 27.0,
+    "median": 27,
+    "p95": 27,
+    "min": 27,
+    "max": 27,
+    "variance": 0.0
+   },
+   "jev_calls": {
+    "n": 1,
+    "mean": 0.0,
+    "median": 0,
+    "p95": 0,
+    "min": 0,
+    "max": 0,
+    "variance": 0.0
+   },
+   "mcp_calls": {
+    "n": 1,
+    "mean": 6.0,
+    "median": 6,
+    "p95": 6,
+    "min": 6,
+    "max": 6,
+    "variance": 0.0
+   },
+   "input_tokens": {
+    "n": 1,
+    "mean": 132805.0,
+    "median": 132805,
+    "p95": 132805,
+    "min": 132805,
+    "max": 132805,
+    "variance": 0.0
+   },
+   "output_tokens": {
+    "n": 1,
+    "mean": 34819.0,
+    "median": 34819,
+    "p95": 34819,
+    "min": 34819,
+    "max": 34819,
+    "variance": 0.0
+   },
+   "total_cost_usd": {
+    "known": true,
+    "source": [
+     "reported"
+    ],
+    "n": 1,
+    "mean": 0.3069,
+    "median": 0.3069,
+    "p95": 0.3069,
+    "min": 0.3069,
+    "max": 0.3069,
+    "variance": 0.0
+   },
+   "retries": {
+    "n": 1,
+    "mean": 0.0,
+    "median": 0,
+    "p95": 0,
+    "min": 0,
+    "max": 0,
+    "variance": 0.0
+   },
+   "node_errors": {
+    "n": 1,
+    "mean": 0.0,
+    "median": 0,
+    "p95": 0,
+    "min": 0,
+    "max": 0,
+    "variance": 0.0
+   },
+   "loops": {
+    "risk_attempts": {
+     "n": 1,
+     "mean": 2.0,
+     "median": 2,
+     "p95": 2,
+     "min": 2,
+     "max": 2,
+     "variance": 0.0
+    },
+    "requirement_attempts": {
+     "n": 1,
+     "mean": 1.0,
+     "median": 1,
+     "p95": 1,
+     "min": 1,
+     "max": 1,
+     "variance": 0.0
+    },
+    "prd_attempts": {
+     "n": 1,
+     "mean": 1.0,
+     "median": 1,
+     "p95": 1,
+     "min": 1,
+     "max": 1,
+     "variance": 0.0
+    }
+   },
+   "engines": {
+    "llm": {
+     "latency_ms": {
+      "n": 1,
+      "mean": 283286.0,
+      "median": 283286.0,
+      "p95": 283286.0,
+      "min": 283286.0,
+      "max": 283286.0,
+      "variance": 0.0
+     },
+     "calls": {
+      "n": 1,
+      "mean": 27.0,
+      "median": 27,
+      "p95": 27,
+      "min": 27,
+      "max": 27,
+      "variance": 0.0
+     },
+     "input_tokens": {
+      "n": 1,
+      "mean": 132805.0,
+      "median": 132805,
+      "p95": 132805,
+      "min": 132805,
+      "max": 132805,
+      "variance": 0.0
+     },
+     "output_tokens": {
+      "n": 1,
+      "mean": 34819.0,
+      "median": 34819,
+      "p95": 34819,
+      "min": 34819,
+      "max": 34819,
+      "variance": 0.0
+     },
+     "cost_usd": {
+      "known": true,
+      "source": [
+       "reported"
+      ],
+      "n": 1,
+      "mean": 0.3069,
+      "median": 0.3069,
+      "p95": 0.3069,
+      "min": 0.3069,
+      "max": 0.3069,
+      "variance": 0.0
+     }
+    },
+    "mcp": {
+     "latency_ms": {
+      "n": 1,
+      "mean": 106.1,
+      "median": 106.1,
+      "p95": 106.1,
+      "min": 106.1,
+      "max": 106.1,
+      "variance": 0.0
+     },
+     "calls": {
+      "n": 1,
+      "mean": 6.0,
+      "median": 6,
+      "p95": 6,
+      "min": 6,
+      "max": 6,
+      "variance": 0.0
+     },
+     "input_tokens": {
+      "n": 1,
+      "mean": 0.0,
+      "median": 0,
+      "p95": 0,
+      "min": 0,
+      "max": 0,
+      "variance": 0.0
+     },
+     "output_tokens": {
+      "n": 1,
+      "mean": 0.0,
+      "median": 0,
+      "p95": 0,
+      "min": 0,
+      "max": 0,
+      "variance": 0.0
+     },
+     "cost_usd": {
+      "known": true,
+      "source": [
+       "catalogue"
+      ],
+      "n": 1,
+      "mean": 0.0,
+      "median": 0.0,
+      "p95": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "variance": 0.0
+     }
+    }
+   },
+   "nodes": {
+    "parse_intent": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 5800.9,
+      "median": 5770.9,
+      "p95": 5925.5,
+      "min": 5706.3,
+      "max": 5925.5,
+      "variance": 8458.106667
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 1207.0,
+      "median": 1207,
+      "p95": 1207,
+      "min": 1207,
+      "max": 1207,
+      "variance": 0
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 532.666667,
+      "median": 532,
+      "p95": 555,
+      "min": 511,
+      "max": 555,
+      "variance": 322.888889
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 0.00387,
+      "median": 0.003867,
+      "p95": 0.003982,
+      "min": 0.003762,
+      "max": 0.003982,
+      "variance": 0.0
+     },
+     "calls": 3,
+     "retries": 0
+    },
+    "retrieve_knowledge": {
+     "engine": [
+      "mcp"
+     ],
+     "model": [],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 53.8,
+      "median": 53.7,
+      "p95": 54.1,
+      "min": 53.6,
+      "max": 54.1,
+      "variance": 0.046667
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 0.0,
+      "median": 0,
+      "p95": 0,
+      "min": 0,
+      "max": 0,
+      "variance": 0
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 0.0,
+      "median": 0,
+      "p95": 0,
+      "min": 0,
+      "max": 0,
+      "variance": 0
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 0.0,
+      "median": 0.0,
+      "p95": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "variance": 0.0
+     },
+     "calls": 9,
+     "retries": 0
+    },
+    "select_capabilities": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 4649.1,
+      "median": 4424.4,
+      "p95": 5209.1,
+      "min": 4313.8,
+      "max": 5209.1,
+      "variance": 158838.726667
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 3343.333333,
+      "median": 3344,
+      "p95": 3360,
+      "min": 3326,
+      "max": 3360,
+      "variance": 192.888889
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 424.0,
+      "median": 424,
+      "p95": 424,
+      "min": 424,
+      "max": 424,
+      "variance": 0
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 0.005463,
+      "median": 0.005464,
+      "p95": 0.00548,
+      "min": 0.005446,
+      "max": 0.00548,
+      "variance": 0.0
+     },
+     "calls": 6,
+     "retries": 0
+    },
+    "select_personas": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 7618.866667,
+      "median": 7721.9,
+      "p95": 8010.2,
+      "min": 7124.5,
+      "max": 8010.2,
+      "variance": 136052.015556
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 4921.333333,
+      "median": 4922,
+      "p95": 4938,
+      "min": 4904,
+      "max": 4938,
+      "variance": 192.888889
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 1114.0,
+      "median": 1114,
+      "p95": 1114,
+      "min": 1114,
+      "max": 1114,
+      "variance": 0
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 0.010491,
+      "median": 0.010492,
+      "p95": 0.010508,
+      "min": 0.010474,
+      "max": 0.010508,
+      "variance": 0.0
+     },
+     "calls": 6,
+     "retries": 0
+    },
+    "identify_outcomes": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 7472.933333,
+      "median": 7780.5,
+      "p95": 8292.4,
+      "min": 6345.9,
+      "max": 8292.4,
+      "variance": 678775.668889
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 1580.333333,
+      "median": 1592,
+      "p95": 1602,
+      "min": 1547,
+      "max": 1602,
+      "variance": 572.222222
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 781.0,
+      "median": 807,
+      "p95": 833,
+      "min": 703,
+      "max": 833,
+      "variance": 3154.666667
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 0.005485,
+      "median": 0.005582,
+      "p95": 0.005757,
+      "min": 0.005117,
+      "max": 0.005757,
+      "variance": 0.0
+     },
+     "calls": 3,
+     "retries": 0
+    },
+    "retrieve_constraints": {
+     "engine": [
+      "mcp"
+     ],
+     "model": [],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 52.633333,
+      "median": 52.6,
+      "p95": 53.0,
+      "min": 52.3,
+      "max": 53.0,
+      "variance": 0.082222
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 0.0,
+      "median": 0,
+      "p95": 0,
+      "min": 0,
+      "max": 0,
+      "variance": 0
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 0.0,
+      "median": 0,
+      "p95": 0,
+      "min": 0,
+      "max": 0,
+      "variance": 0
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 0.0,
+      "median": 0.0,
+      "p95": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "variance": 0.0
+     },
+     "calls": 9,
+     "retries": 0
+    },
+    "assess_constraints": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 4709.7,
+      "median": 4760.8,
+      "p95": 4816.6,
+      "min": 4551.7,
+      "max": 4816.6,
+      "variance": 13000.94
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 3723.333333,
+      "median": 3724,
+      "p95": 3740,
+      "min": 3706,
+      "max": 3740,
+      "variance": 192.888889
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 444.0,
+      "median": 444,
+      "p95": 444,
+      "min": 444,
+      "max": 444,
+      "variance": 0
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 0.005943,
+      "median": 0.005944,
+      "p95": 0.00596,
+      "min": 0.005926,
+      "max": 0.00596,
+      "variance": 0.0
+     },
+     "calls": 6,
+     "retries": 0
+    },
+    "discover_risks": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 15876.733333,
+      "median": 15582.3,
+      "p95": 16894.9,
+      "min": 15153.0,
+      "max": 16894.9,
+      "variance": 549048.095556
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 2736.0,
+      "median": 2746,
+      "p95": 2753,
+      "min": 2709,
+      "max": 2753,
+      "variance": 372.666667
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 1502.333333,
+      "median": 1491,
+      "p95": 1623,
+      "min": 1393,
+      "max": 1623,
+      "variance": 8880.888889
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 0.010248,
+      "median": 0.010201,
+      "p95": 0.010824,
+      "min": 0.009718,
+      "max": 0.010824,
+      "variance": 0.0
+     },
+     "calls": 3,
+     "retries": 0
+    },
+    "assess_risks": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 6,
+     "executions_per_run": 2.0,
+     "latency_ms": {
+      "n": 6,
+      "mean": 22215.05,
+      "median": 22178.25,
+      "p95": 23078.9,
+      "min": 21334.4,
+      "max": 23078.9,
+      "variance": 291737.535833
+     },
+     "input_tokens": {
+      "n": 6,
+      "mean": 16714.666667,
+      "median": 16848.0,
+      "p95": 20308,
+      "min": 13048,
+      "max": 20308,
+      "variance": 10657822.222222
+     },
+     "output_tokens": {
+      "n": 6,
+      "mean": 3625.0,
+      "median": 3591.5,
+      "p95": 3884,
+      "min": 3500,
+      "max": 3884,
+      "variance": 14856.666667
+     },
+     "cost_usd": {
+      "n": 6,
+      "mean": 0.03484,
+      "median": 0.035082,
+      "p95": 0.037819,
+      "min": 0.031236,
+      "max": 0.037819,
+      "variance": 9e-06
+     },
+     "calls": 24,
+     "retries": 0
+    },
+    "investigate_risks": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 33562.533333,
+      "median": 33451.0,
+      "p95": 33961.2,
+      "min": 33275.4,
+      "max": 33961.2,
+      "variance": 84606.782222
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 5367.0,
+      "median": 5336,
+      "p95": 5456,
+      "min": 5309,
+      "max": 5456,
+      "variance": 4082
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 3218.0,
+      "median": 3280,
+      "p95": 3301,
+      "min": 3073,
+      "max": 3301,
+      "variance": 10586
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 0.021457,
+      "median": 0.021736,
+      "p95": 0.021961,
+      "min": 0.020674,
+      "max": 0.021961,
+      "variance": 0.0
+     },
+     "calls": 3,
+     "retries": 0
+    },
+    "generate_requirements": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 41668.7,
+      "median": 41959.9,
+      "p95": 45679.7,
+      "min": 37366.5,
+      "max": 45679.7,
+      "variance": 11560614.426667
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 9737.666667,
+      "median": 9736,
+      "p95": 9767,
+      "min": 9710,
+      "max": 9767,
+      "variance": 542.888889
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 5382.666667,
+      "median": 5412,
+      "p95": 5767,
+      "min": 4969,
+      "max": 5767,
+      "variance": 106564.222222
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 0.036651,
+      "median": 0.036827,
+      "p95": 0.038545,
+      "min": 0.034581,
+      "max": 0.038545,
+      "variance": 3e-06
+     },
+     "calls": 3,
+     "retries": 0
+    },
+    "classify_requirements": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 5,
+     "executions_per_run": 1.67,
+     "latency_ms": {
+      "n": 5,
+      "mean": 21057.76,
+      "median": 21500.8,
+      "p95": 22073.7,
+      "min": 19948.7,
+      "max": 22073.7,
+      "variance": 815947.8184
+     },
+     "input_tokens": {
+      "n": 5,
+      "mean": 15477.6,
+      "median": 15387,
+      "p95": 16801,
+      "min": 14273,
+      "max": 16801,
+      "variance": 823651.84
+     },
+     "output_tokens": {
+      "n": 5,
+      "mean": 3356.4,
+      "median": 3349,
+      "p95": 3690,
+      "min": 3170,
+      "max": 3690,
+      "variance": 33217.04
+     },
+     "cost_usd": {
+      "n": 5,
+      "mean": 0.03226,
+      "median": 0.032177,
+      "p95": 0.035251,
+      "min": 0.030123,
+      "max": 0.035251,
+      "variance": 3e-06
+     },
+     "calls": 25,
+     "retries": 0
+    },
+    "check_coverage": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 5,
+     "executions_per_run": 1.67,
+     "latency_ms": {
+      "n": 5,
+      "mean": 2751.02,
+      "median": 2666.7,
+      "p95": 2969.3,
+      "min": 2570.5,
+      "max": 2969.3,
+      "variance": 22658.3816
+     },
+     "input_tokens": {
+      "n": 5,
+      "mean": 3175.0,
+      "median": 3204,
+      "p95": 3387,
+      "min": 2961,
+      "max": 3387,
+      "variance": 28061.2
+     },
+     "output_tokens": {
+      "n": 5,
+      "mean": 335.2,
+      "median": 351,
+      "p95": 361,
+      "min": 300,
+      "max": 361,
+      "variance": 771.36
+     },
+     "cost_usd": {
+      "n": 5,
+      "mean": 0.004851,
+      "median": 0.004811,
+      "p95": 0.005072,
+      "min": 0.004704,
+      "max": 0.005072,
+      "variance": 0.0
+     },
+     "calls": 5,
+     "retries": 0
+    },
+    "construct_prd": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 88513.4,
+      "median": 88682.2,
+      "p95": 92764.2,
+      "min": 84093.8,
+      "max": 92764.2,
+      "variance": 12543552.746667
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 18749.666667,
+      "median": 18585,
+      "p95": 19256,
+      "min": 18408,
+      "max": 19256,
+      "variance": 133408.222222
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 10156.333333,
+      "median": 10135,
+      "p95": 10695,
+      "min": 9639,
+      "max": 10695,
+      "variance": 186083.555556
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 0.069531,
+      "median": 0.06926,
+      "p95": 0.072731,
+      "min": 0.066603,
+      "max": 0.072731,
+      "variance": 6e-06
+     },
+     "calls": 3,
+     "retries": 0
+    },
+    "validate_prd": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 1,
+     "executions_per_run": 0.33,
+     "latency_ms": {
+      "n": 1,
+      "mean": 3881.9,
+      "median": 3881.9,
+      "p95": 3881.9,
+      "min": 3881.9,
+      "max": 3881.9,
+      "variance": 0.0
+     },
+     "input_tokens": {
+      "n": 1,
+      "mean": 29727.0,
+      "median": 29727,
+      "p95": 29727,
+      "min": 29727,
+      "max": 29727,
+      "variance": 0.0
+     },
+     "output_tokens": {
+      "n": 1,
+      "mean": 257.0,
+      "median": 257,
+      "p95": 257,
+      "min": 257,
+      "max": 257,
+      "variance": 0.0
+     },
+     "cost_usd": {
+      "n": 1,
+      "mean": 0.031012,
+      "median": 0.031012,
+      "p95": 0.031012,
+      "min": 0.031012,
+      "max": 0.031012,
+      "variance": 0.0
+     },
+     "calls": 1,
+     "retries": 0
+    },
+    "finalise": {
+     "engine": [
+      "none"
+     ],
+     "model": [],
+     "executions": 1,
+     "executions_per_run": 0.33,
+     "latency_ms": {
+      "n": 1,
+      "mean": 0.2,
+      "median": 0.2,
+      "p95": 0.2,
+      "min": 0.2,
+      "max": 0.2,
+      "variance": 0.0
+     },
+     "input_tokens": {
+      "n": 1,
+      "mean": 0.0,
+      "median": 0,
+      "p95": 0,
+      "min": 0,
+      "max": 0,
+      "variance": 0.0
+     },
+     "output_tokens": {
+      "n": 1,
+      "mean": 0.0,
+      "median": 0,
+      "p95": 0,
+      "min": 0,
+      "max": 0,
+      "variance": 0.0
+     },
+     "cost_usd": {
+      "n": 1,
+      "mean": 0.0,
+      "median": 0.0,
+      "p95": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "variance": 0.0
+     },
+     "calls": 0,
+     "retries": 0
+    },
+    "refine_requirements": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 2,
+     "executions_per_run": 0.67,
+     "latency_ms": {
+      "n": 2,
+      "mean": 5088.3,
+      "median": 5088.3,
+      "p95": 5334.4,
+      "min": 4842.2,
+      "max": 5334.4,
+      "variance": 60565.21
+     },
+     "input_tokens": {
+      "n": 2,
+      "mean": 11729.5,
+      "median": 11729.5,
+      "p95": 12199,
+      "min": 11260,
+      "max": 12199,
+      "variance": 220430.25
+     },
+     "output_tokens": {
+      "n": 2,
+      "mean": 325.0,
+      "median": 325.0,
+      "p95": 340,
+      "min": 310,
+      "max": 340,
+      "variance": 225
+     },
+     "cost_usd": {
+      "n": 2,
+      "mean": 0.013355,
+      "median": 0.013355,
+      "p95": 0.013899,
+      "min": 0.01281,
+      "max": 0.013899,
+      "variance": 0.0
+     },
+     "calls": 2,
+     "retries": 0
+    }
+   },
+   "trace_ids": [
+    "633cbf4962f11fb561b67dddc3b706c9"
+   ]
+  },
+  "hybrid": {
+   "runs": 1,
+   "succeeded": 1,
+   "failure_rate": 0.0,
+   "partial_runs": 2,
+   "errors": [],
+   "total_latency_ms": {
+    "n": 1,
+    "mean": 234795.0,
+    "median": 234795.0,
+    "p95": 234795.0,
+    "min": 234795.0,
+    "max": 234795.0,
+    "variance": 0.0
+   },
+   "llm_calls": {
+    "n": 1,
+    "mean": 8.0,
+    "median": 8,
+    "p95": 8,
+    "min": 8,
+    "max": 8,
+    "variance": 0.0
+   },
+   "jev_calls": {
+    "n": 1,
+    "mean": 35.0,
+    "median": 35,
+    "p95": 35,
+    "min": 35,
+    "max": 35,
+    "variance": 0.0
+   },
+   "mcp_calls": {
+    "n": 1,
+    "mean": 6.0,
+    "median": 6,
+    "p95": 6,
+    "min": 6,
+    "max": 6,
+    "variance": 0.0
+   },
+   "input_tokens": {
+    "n": 1,
+    "mean": 183340.0,
+    "median": 183340,
+    "p95": 183340,
+    "min": 183340,
+    "max": 183340,
+    "variance": 0.0
+   },
+   "output_tokens": {
+    "n": 1,
+    "mean": 38978.0,
+    "median": 38978,
+    "p95": 38978,
+    "min": 38978,
+    "max": 38978,
+    "variance": 0.0
+   },
+   "total_cost_usd": {
+    "known": true,
+    "source": [
+     "reported"
+    ],
+    "n": 1,
+    "mean": 0.193585,
+    "median": 0.193585,
+    "p95": 0.193585,
+    "min": 0.193585,
+    "max": 0.193585,
+    "variance": 0.0
+   },
+   "retries": {
+    "n": 1,
+    "mean": 0.0,
+    "median": 0,
+    "p95": 0,
+    "min": 0,
+    "max": 0,
+    "variance": 0.0
+   },
+   "node_errors": {
+    "n": 1,
+    "mean": 0.0,
+    "median": 0,
+    "p95": 0,
+    "min": 0,
+    "max": 0,
+    "variance": 0.0
+   },
+   "loops": {
+    "risk_attempts": {
+     "n": 1,
+     "mean": 2.0,
+     "median": 2,
+     "p95": 2,
+     "min": 2,
+     "max": 2,
+     "variance": 0.0
+    },
+    "requirement_attempts": {
+     "n": 1,
+     "mean": 3.0,
+     "median": 3,
+     "p95": 3,
+     "min": 3,
+     "max": 3,
+     "variance": 0.0
+    },
+    "prd_attempts": {
+     "n": 1,
+     "mean": 1.0,
+     "median": 1,
+     "p95": 1,
+     "min": 1,
+     "max": 1,
+     "variance": 0.0
+    }
+   },
+   "engines": {
+    "llm": {
+     "latency_ms": {
+      "n": 1,
+      "mean": 222953.7,
+      "median": 222953.7,
+      "p95": 222953.7,
+      "min": 222953.7,
+      "max": 222953.7,
+      "variance": 0.0
+     },
+     "calls": {
+      "n": 1,
+      "mean": 8.0,
+      "median": 8,
+      "p95": 8,
+      "min": 8,
+      "max": 8,
+      "variance": 0.0
+     },
+     "input_tokens": {
+      "n": 1,
+      "mean": 67453.0,
+      "median": 67453,
+      "p95": 67453,
+      "min": 67453,
+      "max": 67453,
+      "variance": 0.0
+     },
+     "output_tokens": {
+      "n": 1,
+      "mean": 24253.0,
+      "median": 24253,
+      "p95": 24253,
+      "min": 24253,
+      "max": 24253,
+      "variance": 0.0
+     },
+     "cost_usd": {
+      "known": true,
+      "source": [
+       "reported"
+      ],
+      "n": 1,
+      "mean": 0.188718,
+      "median": 0.188718,
+      "p95": 0.188718,
+      "min": 0.188718,
+      "max": 0.188718,
+      "variance": 0.0
+     }
+    },
+    "jev": {
+     "latency_ms": {
+      "n": 1,
+      "mean": 11424.7,
+      "median": 11424.7,
+      "p95": 11424.7,
+      "min": 11424.7,
+      "max": 11424.7,
+      "variance": 0.0
+     },
+     "calls": {
+      "n": 1,
+      "mean": 35.0,
+      "median": 35,
+      "p95": 35,
+      "min": 35,
+      "max": 35,
+      "variance": 0.0
+     },
+     "input_tokens": {
+      "n": 1,
+      "mean": 115887.0,
+      "median": 115887,
+      "p95": 115887,
+      "min": 115887,
+      "max": 115887,
+      "variance": 0.0
+     },
+     "output_tokens": {
+      "n": 1,
+      "mean": 14725.0,
+      "median": 14725,
+      "p95": 14725,
+      "min": 14725,
+      "max": 14725,
+      "variance": 0.0
+     },
+     "cost_usd": {
+      "known": true,
+      "source": [
+       "reported"
+      ],
+      "n": 1,
+      "mean": 0.004867,
+      "median": 0.004867,
+      "p95": 0.004867,
+      "min": 0.004867,
+      "max": 0.004867,
+      "variance": 0.0
+     }
+    },
+    "mcp": {
+     "latency_ms": {
+      "n": 1,
+      "mean": 98.9,
+      "median": 98.9,
+      "p95": 98.9,
+      "min": 98.9,
+      "max": 98.9,
+      "variance": 0.0
+     },
+     "calls": {
+      "n": 1,
+      "mean": 6.0,
+      "median": 6,
+      "p95": 6,
+      "min": 6,
+      "max": 6,
+      "variance": 0.0
+     },
+     "input_tokens": {
+      "n": 1,
+      "mean": 0.0,
+      "median": 0,
+      "p95": 0,
+      "min": 0,
+      "max": 0,
+      "variance": 0.0
+     },
+     "output_tokens": {
+      "n": 1,
+      "mean": 0.0,
+      "median": 0,
+      "p95": 0,
+      "min": 0,
+      "max": 0,
+      "variance": 0.0
+     },
+     "cost_usd": {
+      "known": true,
+      "source": [
+       "catalogue"
+      ],
+      "n": 1,
+      "mean": 0.0,
+      "median": 0.0,
+      "p95": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "variance": 0.0
+     }
+    }
+   },
+   "nodes": {
+    "parse_intent": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 8069.966667,
+      "median": 7076.1,
+      "p95": 11380.9,
+      "min": 5752.9,
+      "max": 11380.9,
+      "variance": 5772949.475556
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 1207.0,
+      "median": 1207,
+      "p95": 1207,
+      "min": 1207,
+      "max": 1207,
+      "variance": 0
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 552.666667,
+      "median": 549,
+      "p95": 562,
+      "min": 547,
+      "max": 562,
+      "variance": 44.222222
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 0.00397,
+      "median": 0.003952,
+      "p95": 0.004017,
+      "min": 0.003942,
+      "max": 0.004017,
+      "variance": 0.0
+     },
+     "calls": 3,
+     "retries": 0
+    },
+    "retrieve_knowledge": {
+     "engine": [
+      "mcp"
+     ],
+     "model": [],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 52.1,
+      "median": 53.5,
+      "p95": 54.6,
+      "min": 48.2,
+      "max": 54.6,
+      "variance": 7.806667
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 0.0,
+      "median": 0,
+      "p95": 0,
+      "min": 0,
+      "max": 0,
+      "variance": 0
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 0.0,
+      "median": 0,
+      "p95": 0,
+      "min": 0,
+      "max": 0,
+      "variance": 0
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 0.0,
+      "median": 0.0,
+      "p95": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "variance": 0.0
+     },
+     "calls": 9,
+     "retries": 0
+    },
+    "select_capabilities": {
+     "engine": [
+      "jev"
+     ],
+     "model": [
+      "typesafe/jev-1.13"
+     ],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 961.9,
+      "median": 954.7,
+      "p95": 1067.3,
+      "min": 863.7,
+      "max": 1067.3,
+      "variance": 6934.746667
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 2175.0,
+      "median": 2189,
+      "p95": 2193,
+      "min": 2143,
+      "max": 2193,
+      "variance": 514.666667
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 382.0,
+      "median": 382,
+      "p95": 382,
+      "min": 382,
+      "max": 382,
+      "variance": 0
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 9.1e-05,
+      "median": 9.2e-05,
+      "p95": 9.2e-05,
+      "min": 9e-05,
+      "max": 9.2e-05,
+      "variance": 0.0
+     },
+     "calls": 6,
+     "retries": 0
+    },
+    "select_personas": {
+     "engine": [
+      "jev"
+     ],
+     "model": [
+      "typesafe/jev-1.13"
+     ],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 654.766667,
+      "median": 577.4,
+      "p95": 818.7,
+      "min": 568.2,
+      "max": 818.7,
+      "variance": 13451.175556
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 3460.0,
+      "median": 3474,
+      "p95": 3478,
+      "min": 3428,
+      "max": 3478,
+      "variance": 514.666667
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 496.0,
+      "median": 496,
+      "p95": 496,
+      "min": 496,
+      "max": 496,
+      "variance": 0
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 0.000145,
+      "median": 0.000146,
+      "p95": 0.000146,
+      "min": 0.000144,
+      "max": 0.000146,
+      "variance": 0.0
+     },
+     "calls": 6,
+     "retries": 0
+    },
+    "identify_outcomes": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 7034.333333,
+      "median": 6956.9,
+      "p95": 7490.1,
+      "min": 6656.0,
+      "max": 7490.1,
+      "variance": 118951.762222
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 1669.0,
+      "median": 1669,
+      "p95": 1678,
+      "min": 1660,
+      "max": 1678,
+      "variance": 54
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 727.333333,
+      "median": 737,
+      "p95": 754,
+      "min": 691,
+      "max": 754,
+      "variance": 708.222222
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 0.005306,
+      "median": 0.005354,
+      "p95": 0.005448,
+      "min": 0.005115,
+      "max": 0.005448,
+      "variance": 0.0
+     },
+     "calls": 3,
+     "retries": 0
+    },
+    "retrieve_constraints": {
+     "engine": [
+      "mcp"
+     ],
+     "model": [],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 50.2,
+      "median": 50.6,
+      "p95": 50.7,
+      "min": 49.3,
+      "max": 50.7,
+      "variance": 0.406667
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 0.0,
+      "median": 0,
+      "p95": 0,
+      "min": 0,
+      "max": 0,
+      "variance": 0
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 0.0,
+      "median": 0,
+      "p95": 0,
+      "min": 0,
+      "max": 0,
+      "variance": 0
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 0.0,
+      "median": 0.0,
+      "p95": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "variance": 0.0
+     },
+     "calls": 9,
+     "retries": 0
+    },
+    "assess_constraints": {
+     "engine": [
+      "jev"
+     ],
+     "model": [
+      "typesafe/jev-1.13"
+     ],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 603.933333,
+      "median": 609.9,
+      "p95": 613.2,
+      "min": 588.7,
+      "max": 613.2,
+      "variance": 117.842222
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 2275.0,
+      "median": 2289,
+      "p95": 2293,
+      "min": 2243,
+      "max": 2293,
+      "variance": 514.666667
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 330.0,
+      "median": 330,
+      "p95": 330,
+      "min": 330,
+      "max": 330,
+      "variance": 0
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 9.6e-05,
+      "median": 9.6e-05,
+      "p95": 9.6e-05,
+      "min": 9.4e-05,
+      "max": 9.6e-05,
+      "variance": 0.0
+     },
+     "calls": 6,
+     "retries": 0
+    },
+    "discover_risks": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 16301.8,
+      "median": 16592.1,
+      "p95": 17158.0,
+      "min": 15155.3,
+      "max": 17158.0,
+      "variance": 710604.926667
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 2672.333333,
+      "median": 2650,
+      "p95": 2726,
+      "min": 2641,
+      "max": 2726,
+      "variance": 1453.555556
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 1532.333333,
+      "median": 1534,
+      "p95": 1633,
+      "min": 1430,
+      "max": 1633,
+      "variance": 6869.555556
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 0.010334,
+      "median": 0.010311,
+      "p95": 0.010891,
+      "min": 0.0098,
+      "max": 0.010891,
+      "variance": 0.0
+     },
+     "calls": 3,
+     "retries": 0
+    },
+    "assess_risks": {
+     "engine": [
+      "jev"
+     ],
+     "model": [
+      "typesafe/jev-1.13"
+     ],
+     "executions": 6,
+     "executions_per_run": 2.0,
+     "latency_ms": {
+      "n": 6,
+      "mean": 1529.483333,
+      "median": 1394.2,
+      "p95": 2061.8,
+      "min": 1233.6,
+      "max": 2061.8,
+      "variance": 99659.508056
+     },
+     "input_tokens": {
+      "n": 6,
+      "mean": 15639.0,
+      "median": 14808.5,
+      "p95": 23952,
+      "min": 10336,
+      "max": 23952,
+      "variance": 24676992.666667
+     },
+     "output_tokens": {
+      "n": 6,
+      "mean": 1911.333333,
+      "median": 1873.0,
+      "p95": 2025,
+      "min": 1836,
+      "max": 2025,
+      "variance": 6688.555556
+     },
+     "cost_usd": {
+      "n": 6,
+      "mean": 0.000657,
+      "median": 0.000622,
+      "p95": 0.001006,
+      "min": 0.000434,
+      "max": 0.001006,
+      "variance": 0.0
+     },
+     "calls": 26,
+     "retries": 0
+    },
+    "investigate_risks": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 46228.133333,
+      "median": 40089.2,
+      "p95": 60837.2,
+      "min": 37758.0,
+      "max": 60837.2,
+      "variance": 107618163.342222
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 5502.333333,
+      "median": 5444,
+      "p95": 5711,
+      "min": 5352,
+      "max": 5711,
+      "variance": 23181.555556
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 4338.666667,
+      "median": 3735,
+      "p95": 5805,
+      "min": 3476,
+      "max": 5805,
+      "variance": 1086246.888889
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 0.027196,
+      "median": 0.024386,
+      "p95": 0.034469,
+      "min": 0.022732,
+      "max": 0.034469,
+      "variance": 2.7e-05
+     },
+     "calls": 3,
+     "retries": 0
+    },
+    "generate_requirements": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 42210.433333,
+      "median": 41399.6,
+      "p95": 45283.3,
+      "min": 39948.4,
+      "max": 45283.3,
+      "variance": 5072251.682222
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 10847.666667,
+      "median": 10380,
+      "p95": 12226,
+      "min": 9937,
+      "max": 12226,
+      "variance": 982609.555556
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 5532.666667,
+      "median": 5491,
+      "p95": 5853,
+      "min": 5254,
+      "max": 5853,
+      "variance": 60668.222222
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 0.038511,
+      "median": 0.037835,
+      "p95": 0.041491,
+      "min": 0.036207,
+      "max": 0.041491,
+      "variance": 5e-06
+     },
+     "calls": 3,
+     "retries": 0
+    },
+    "classify_requirements": {
+     "engine": [
+      "jev"
+     ],
+     "model": [
+      "typesafe/jev-1.13"
+     ],
+     "executions": 8,
+     "executions_per_run": 2.67,
+     "latency_ms": {
+      "n": 8,
+      "mean": 1963.875,
+      "median": 1747.5,
+      "p95": 3286.6,
+      "min": 1537.2,
+      "max": 3286.6,
+      "variance": 286240.609375
+     },
+     "input_tokens": {
+      "n": 8,
+      "mean": 15694.375,
+      "median": 15726.0,
+      "p95": 20045,
+      "min": 12639,
+      "max": 20045,
+      "variance": 5414679.734375
+     },
+     "output_tokens": {
+      "n": 8,
+      "mean": 3077.25,
+      "median": 3113.5,
+      "p95": 3786,
+      "min": 2591,
+      "max": 3786,
+      "variance": 154191.9375
+     },
+     "cost_usd": {
+      "n": 8,
+      "mean": 0.000659,
+      "median": 0.00066,
+      "p95": 0.000842,
+      "min": 0.000531,
+      "max": 0.000842,
+      "variance": 0.0
+     },
+     "calls": 46,
+     "retries": 0
+    },
+    "check_coverage": {
+     "engine": [
+      "jev"
+     ],
+     "model": [
+      "typesafe/jev-1.13"
+     ],
+     "executions": 8,
+     "executions_per_run": 2.67,
+     "latency_ms": {
+      "n": 8,
+      "mean": 347.1375,
+      "median": 333.9,
+      "p95": 461.7,
+      "min": 261.6,
+      "max": 461.7,
+      "variance": 4695.899844
+     },
+     "input_tokens": {
+      "n": 8,
+      "mean": 2443.75,
+      "median": 2438.0,
+      "p95": 2826,
+      "min": 2152,
+      "max": 2826,
+      "variance": 36656.1875
+     },
+     "output_tokens": {
+      "n": 8,
+      "mean": 273.5,
+      "median": 274.0,
+      "p95": 278,
+      "min": 270,
+      "max": 278,
+      "variance": 9.75
+     },
+     "cost_usd": {
+      "n": 8,
+      "mean": 0.000103,
+      "median": 0.000102,
+      "p95": 0.000119,
+      "min": 9e-05,
+      "max": 0.000119,
+      "variance": 0.0
+     },
+     "calls": 8,
+     "retries": 0
+    },
+    "refine_requirements": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 5,
+     "executions_per_run": 1.67,
+     "latency_ms": {
+      "n": 5,
+      "mean": 12394.54,
+      "median": 13617.9,
+      "p95": 16356.3,
+      "min": 6231.1,
+      "max": 16356.3,
+      "variance": 13349019.6704
+     },
+     "input_tokens": {
+      "n": 5,
+      "mean": 13178.2,
+      "median": 12886,
+      "p95": 15096,
+      "min": 12036,
+      "max": 15096,
+      "variance": 1237181.76
+     },
+     "output_tokens": {
+      "n": 5,
+      "mean": 1199.2,
+      "median": 1326,
+      "p95": 1650,
+      "min": 424,
+      "max": 1650,
+      "variance": 189853.76
+     },
+     "cost_usd": {
+      "n": 5,
+      "mean": 0.019174,
+      "median": 0.019516,
+      "p95": 0.022756,
+      "min": 0.015764,
+      "max": 0.022756,
+      "variance": 6e-06
+     },
+     "calls": 5,
+     "retries": 0
+    },
+    "construct_prd": {
+     "engine": [
+      "llm"
+     ],
+     "model": [
+      "anthropic/claude-haiku-4.5"
+     ],
+     "executions": 3,
+     "executions_per_run": 1.0,
+     "latency_ms": {
+      "n": 3,
+      "mean": 102850.833333,
+      "median": 103196.8,
+      "p95": 105267.1,
+      "min": 100088.6,
+      "max": 105267.1,
+      "variance": 4529323.508889
+     },
+     "input_tokens": {
+      "n": 3,
+      "mean": 22930.0,
+      "median": 22051,
+      "p95": 25790,
+      "min": 20949,
+      "max": 25790,
+      "variance": 4292200.666667
+     },
+     "output_tokens": {
+      "n": 3,
+      "mean": 11861.666667,
+      "median": 12042,
+      "p95": 12239,
+      "min": 11304,
+      "max": 12239,
+      "variance": 161964.222222
+     },
+     "cost_usd": {
+      "n": 3,
+      "mean": 0.082238,
+      "median": 0.082261,
+      "p95": 0.086985,
+      "min": 0.077469,
+      "max": 0.086985,
+      "variance": 1.5e-05
+     },
+     "calls": 3,
+     "retries": 0
+    },
+    "validate_prd": {
+     "engine": [
+      "jev"
+     ],
+     "model": [
+      "typesafe/jev-1.13"
+     ],
+     "executions": 1,
+     "executions_per_run": 0.33,
+     "latency_ms": {
+      "n": 1,
+      "mean": 777.6,
+      "median": 777.6,
+      "p95": 777.6,
+      "min": 777.6,
+      "max": 777.6,
+      "variance": 0.0
+     },
+     "input_tokens": {
+      "n": 1,
+      "mean": 28675.0,
+      "median": 28675,
+      "p95": 28675,
+      "min": 28675,
+      "max": 28675,
+      "variance": 0.0
+     },
+     "output_tokens": {
+      "n": 1,
+      "mean": 204.0,
+      "median": 204,
+      "p95": 204,
+      "min": 204,
+      "max": 204,
+      "variance": 0.0
+     },
+     "cost_usd": {
+      "n": 1,
+      "mean": 0.001204,
+      "median": 0.001204,
+      "p95": 0.001204,
+      "min": 0.001204,
+      "max": 0.001204,
+      "variance": 0.0
+     },
+     "calls": 1,
+     "retries": 0
+    },
+    "finalise": {
+     "engine": [
+      "none"
+     ],
+     "model": [],
+     "executions": 1,
+     "executions_per_run": 0.33,
+     "latency_ms": {
+      "n": 1,
+      "mean": 0.2,
+      "median": 0.2,
+      "p95": 0.2,
+      "min": 0.2,
+      "max": 0.2,
+      "variance": 0.0
+     },
+     "input_tokens": {
+      "n": 1,
+      "mean": 0.0,
+      "median": 0,
+      "p95": 0,
+      "min": 0,
+      "max": 0,
+      "variance": 0.0
+     },
+     "output_tokens": {
+      "n": 1,
+      "mean": 0.0,
+      "median": 0,
+      "p95": 0,
+      "min": 0,
+      "max": 0,
+      "variance": 0.0
+     },
+     "cost_usd": {
+      "n": 1,
+      "mean": 0.0,
+      "median": 0.0,
+      "p95": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "variance": 0.0
+     },
+     "calls": 0,
+     "retries": 0
+    }
+   },
+   "trace_ids": [
+    "35c9aea3273ebd7152b938c7441f88e3"
+   ]
+  }
+ },
+ "quality": {
+  "judgements": 2,
+  "judge_model": "anthropic/claude-sonnet-5",
+  "total_score": {
+   "llm": {
+    "n": 2,
+    "mean": 46.5,
+    "median": 46.5,
+    "p95": 48,
+    "min": 45,
+    "max": 48,
+    "variance": 2.25
+   },
+   "hybrid": {
+    "n": 2,
+    "mean": 40.0,
+    "median": 40.0,
+    "p95": 42,
+    "min": 38,
+    "max": 42,
+    "variance": 4
+   }
+  },
+  "per_dimension": {
+   "llm": {
+    "intent_fidelity": {
+     "n": 2,
+     "mean": 4.5,
+     "median": 4.5,
+     "p95": 5,
+     "min": 4,
+     "max": 5,
+     "variance": 0.25
+    },
+    "requirement_coverage": {
+     "n": 2,
+     "mean": 5.0,
+     "median": 5.0,
+     "p95": 5,
+     "min": 5,
+     "max": 5,
+     "variance": 0
+    },
+    "persona_coverage": {
+     "n": 2,
+     "mean": 4.0,
+     "median": 4.0,
+     "p95": 4,
+     "min": 4,
+     "max": 4,
+     "variance": 0
+    },
+    "business_outcome_coverage": {
+     "n": 2,
+     "mean": 5.0,
+     "median": 5.0,
+     "p95": 5,
+     "min": 5,
+     "max": 5,
+     "variance": 0
+    },
+    "risk_coverage": {
+     "n": 2,
+     "mean": 5.0,
+     "median": 5.0,
+     "p95": 5,
+     "min": 5,
+     "max": 5,
+     "variance": 0
+    },
+    "constraint_compliance": {
+     "n": 2,
+     "mean": 5.0,
+     "median": 5.0,
+     "p95": 5,
+     "min": 5,
+     "max": 5,
+     "variance": 0
+    },
+    "internal_consistency": {
+     "n": 2,
+     "mean": 4.5,
+     "median": 4.5,
+     "p95": 5,
+     "min": 4,
+     "max": 5,
+     "variance": 0.25
+    },
+    "unsupported_assumptions": {
+     "n": 2,
+     "mean": 3.5,
+     "median": 3.5,
+     "p95": 4,
+     "min": 3,
+     "max": 4,
+     "variance": 0.25
+    },
+    "actionability": {
+     "n": 2,
+     "mean": 5.0,
+     "median": 5.0,
+     "p95": 5,
+     "min": 5,
+     "max": 5,
+     "variance": 0
+    },
+    "prd_completeness": {
+     "n": 2,
+     "mean": 5.0,
+     "median": 5.0,
+     "p95": 5,
+     "min": 5,
+     "max": 5,
+     "variance": 0
+    }
+   },
+   "hybrid": {
+    "intent_fidelity": {
+     "n": 2,
+     "mean": 3.5,
+     "median": 3.5,
+     "p95": 4,
+     "min": 3,
+     "max": 4,
+     "variance": 0.25
+    },
+    "requirement_coverage": {
+     "n": 2,
+     "mean": 4.0,
+     "median": 4.0,
+     "p95": 4,
+     "min": 4,
+     "max": 4,
+     "variance": 0
+    },
+    "persona_coverage": {
+     "n": 2,
+     "mean": 4.5,
+     "median": 4.5,
+     "p95": 5,
+     "min": 4,
+     "max": 5,
+     "variance": 0.25
+    },
+    "business_outcome_coverage": {
+     "n": 2,
+     "mean": 4.0,
+     "median": 4.0,
+     "p95": 4,
+     "min": 4,
+     "max": 4,
+     "variance": 0
+    },
+    "risk_coverage": {
+     "n": 2,
+     "mean": 5.0,
+     "median": 5.0,
+     "p95": 5,
+     "min": 5,
+     "max": 5,
+     "variance": 0
+    },
+    "constraint_compliance": {
+     "n": 2,
+     "mean": 4.0,
+     "median": 4.0,
+     "p95": 4,
+     "min": 4,
+     "max": 4,
+     "variance": 0
+    },
+    "internal_consistency": {
+     "n": 2,
+     "mean": 3.5,
+     "median": 3.5,
+     "p95": 4,
+     "min": 3,
+     "max": 4,
+     "variance": 0.25
+    },
+    "unsupported_assumptions": {
+     "n": 2,
+     "mean": 2.5,
+     "median": 2.5,
+     "p95": 3,
+     "min": 2,
+     "max": 3,
+     "variance": 0.25
+    },
+    "actionability": {
+     "n": 2,
+     "mean": 4.0,
+     "median": 4.0,
+     "p95": 4,
+     "min": 4,
+     "max": 4,
+     "variance": 0
+    },
+    "prd_completeness": {
+     "n": 2,
+     "mean": 5.0,
+     "median": 5.0,
+     "p95": 5,
+     "min": 5,
+     "max": 5,
+     "variance": 0
+    }
+   }
+  },
+  "preferred_counts": {
+   "llm": 2,
+   "hybrid": 0,
+   "tie": 0
+  },
+  "judge_cost_usd": 0.15202
+ },
+ "consistency": {
+  "llm": {
+   "select_capabilities": {
+    "repeats": 3,
+    "identical_rate": 1.0,
+    "decision_agreement": 1.0,
+    "decisions": 84,
+    "unstable": [],
+    "engine": "llm",
+    "model": "anthropic/claude-haiku-4.5",
+    "errors": 0,
+    "median_latency_ms": 4190.4,
+    "mean_cost_usd": 0.005446
+   },
+   "select_personas": {
+    "repeats": 3,
+    "identical_rate": 1.0,
+    "decision_agreement": 1.0,
+    "decisions": 120,
+    "unstable": [],
+    "engine": "llm",
+    "model": "anthropic/claude-haiku-4.5",
+    "errors": 0,
+    "median_latency_ms": 7715.6,
+    "mean_cost_usd": 0.010474
+   },
+   "assess_constraints": {
+    "repeats": 3,
+    "identical_rate": 1.0,
+    "decision_agreement": 1.0,
+    "decisions": 136,
+    "unstable": [],
+    "engine": "llm",
+    "model": "anthropic/claude-haiku-4.5",
+    "errors": 0,
+    "median_latency_ms": 4791.9,
+    "mean_cost_usd": 0.005926
+   },
+   "assess_risks": {
+    "repeats": 3,
+    "identical_rate": 1.0,
+    "decision_agreement": 1.0,
+    "decisions": 105,
+    "unstable": [],
+    "engine": "llm",
+    "model": "anthropic/claude-haiku-4.5",
+    "errors": 0,
+    "median_latency_ms": 20882.3,
+    "mean_cost_usd": 0.038678
+   },
+   "classify_requirements": {
+    "repeats": 3,
+    "identical_rate": 1.0,
+    "decision_agreement": 1.0,
+    "decisions": 255,
+    "unstable": [],
+    "engine": "llm",
+    "model": "anthropic/claude-haiku-4.5",
+    "errors": 0,
+    "median_latency_ms": 21372.0,
+    "mean_cost_usd": 0.032547
+   },
+   "check_coverage": {
+    "repeats": 3,
+    "identical_rate": 1.0,
+    "decision_agreement": 1.0,
+    "decisions": 1,
+    "unstable": [],
+    "engine": "llm",
+    "model": "anthropic/claude-haiku-4.5",
+    "errors": 0,
+    "median_latency_ms": 2866.9,
+    "mean_cost_usd": 0.004704
+   },
+   "validate_prd": {
+    "repeats": 3,
+    "identical_rate": 1.0,
+    "decision_agreement": 1.0,
+    "decisions": 1,
+    "unstable": [],
+    "engine": "llm",
+    "model": "anthropic/claude-haiku-4.5",
+    "errors": 0,
+    "median_latency_ms": 3066.0,
+    "mean_cost_usd": 0.031012
+   }
+  },
+  "jev": {
+   "select_capabilities": {
+    "repeats": 3,
+    "identical_rate": 1.0,
+    "decision_agreement": 1.0,
+    "decisions": 84,
+    "unstable": [],
+    "engine": "jev",
+    "model": "typesafe/jev-1.13",
+    "errors": 0,
+    "median_latency_ms": 713.6,
+    "mean_cost_usd": 8.9e-05
+   },
+   "select_personas": {
+    "repeats": 3,
+    "identical_rate": 0.6667,
+    "decision_agreement": 0.9972,
+    "decisions": 120,
+    "unstable": [
+     {
+      "decision": "persona_selections[per-delivery-driver].impact_level",
+      "values": {
+       "low": 2,
+       "medium": 1
+      }
+     }
+    ],
+    "engine": "jev",
+    "model": "typesafe/jev-1.13",
+    "errors": 0,
+    "median_latency_ms": 646.8,
+    "mean_cost_usd": 0.000144
+   },
+   "assess_constraints": {
+    "repeats": 3,
+    "identical_rate": 0.3333,
+    "decision_agreement": 0.9951,
+    "decisions": 136,
+    "unstable": [
+     {
+      "decision": "feature_overlaps[feat-delivery-slots].overlaps",
+      "values": {
+       "True": 2,
+       "False": 1
+      }
+     },
+     {
+      "decision": "policy_assessments[pol-change-freeze].applies",
+      "values": {
+       "True": 1,
+       "False": 2
+      }
+     }
+    ],
+    "engine": "jev",
+    "model": "typesafe/jev-1.13",
+    "errors": 0,
+    "median_latency_ms": 616.8,
+    "mean_cost_usd": 0.000103
+   },
+   "assess_risks": {
+    "repeats": 3,
+    "identical_rate": 1.0,
+    "decision_agreement": 1.0,
+    "decisions": 105,
+    "unstable": [],
+    "engine": "jev",
+    "model": "typesafe/jev-1.13",
+    "errors": 0,
+    "median_latency_ms": 1158.1,
+    "mean_cost_usd": 0.000715
+   },
+   "classify_requirements": {
+    "repeats": 3,
+    "identical_rate": 0.6667,
+    "decision_agreement": 0.9778,
+    "decisions": 255,
+    "unstable": [
+     {
+      "decision": "requirements[req-accessibility-phone-fallback].rank",
+      "values": {
+       "11": 1,
+       "12": 2
+      }
+     },
+     {
+      "decision": "requirements[req-accessibility-wcag-2-2-aa].rank",
+      "values": {
+       "5": 1,
+       "6": 2
+      }
+     },
+     {
+      "decision": "requirements[req-agent-desktop-reschedule].moscow",
+      "values": {
+       "should": 1,
+       "must": 2
+      }
+     },
+     {
+      "decision": "requirements[req-agent-desktop-reschedule].rank",
+      "values": {
+       "10": 1,
+       "3": 2
+      }
+     },
+     {
+      "decision": "requirements[req-agent-reschedule-visibility].moscow",
+      "values": {
+       "should": 1,
+       "must": 2
+      }
+     },
+     {
+      "decision": "requirements[req-agent-reschedule-visibility].rank",
+      "values": {
+       "16": 1,
+       "7": 2
+      }
+     },
+     {
+      "decision": "requirements[req-carrier-integration-roadmap].rank",
+      "values": {
+       "12": 1,
+       "13": 2
+      }
+     },
+     {
+      "decision": "requirements[req-confirmation-in-app-fallback].rank",
+      "values": {
+       "13": 1,
+       "14": 2
+      }
+     },
+     {
+      "decision": "requirements[req-cutoff-enforcement].rank",
+      "values": {
+       "4": 1,
+       "5": 2
+      }
+     },
+     {
+      "decision": "requirements[req-dispatch-status-check].rank",
+      "values": {
+       "3": 1,
+       "4": 2
+      }
+     },
+     {
+      "decision": "requirements[req-fraud-screening-reschedule].rank",
+      "values": {
+       "6": 1,
+       "8": 2
+      }
+     },
+     {
+      "decision": "requirements[req-grocery-order-exclusion].rank",
+      "values": {
+       "7": 1,
+       "9": 2
+      }
+     },
+     {
+      "decision": "requirements[req-peak-season-launch-planning].rank",
+      "values": {
+       "14": 1,
+       "15": 2
+      }
+     },
+     {
+      "decision": "requirements[req-reschedule-analytics-pseudonymised].rank",
+      "values": {
+       "8": 1,
+       "10": 2
+      }
+     },
+     {
+      "decision": "requirements[req-reschedule-confirmation-email].rank",
+      "values": {
+       "15": 1,
+       "16": 2
+      }
+     },
+     {
+      "decision": "requirements[req-success-metrics-monitoring].kind",
+      "values": {
+       "non_functional": 1,
+       "data": 2
+      }
+     },
+     {
+      "decision": "requirements[req-success-metrics-monitoring].rank",
+      "values": {
+       "9": 1,
+       "11": 2
+      }
+     }
+    ],
+    "engine": "jev",
+    "model": "typesafe/jev-1.13",
+    "errors": 0,
+    "median_latency_ms": 1474.9,
+    "mean_cost_usd": 0.000543
+   },
+   "check_coverage": {
+    "repeats": 3,
+    "identical_rate": 0.6667,
+    "decision_agreement": 0.8889,
+    "decisions": 3,
+    "unstable": [
+     {
+      "decision": "coverage.gaps[0]",
+      "values": {
+       "Requirements would not deliver outcome out-failed-delivery-reduction (P=0.49): Failed deliveries decrease because customers can reschedule before carrier dispatch rather than after failed delivery attempts.": 1,
+       "Requirements would not deliver outcome out-failed-delivery-reduction (P=0.48): Failed deliveries decrease because customers can reschedule before carrier dispatch rather than after failed delivery attempts.": 2
+      }
+     }
+    ],
+    "engine": "jev",
+    "model": "typesafe/jev-1.13",
+    "errors": 0,
+    "median_latency_ms": 258.0,
+    "mean_cost_usd": 0.000102
+   },
+   "validate_prd": {
+    "repeats": 3,
+    "identical_rate": 1.0,
+    "decision_agreement": 1.0,
+    "decisions": 4,
+    "unstable": [],
+    "engine": "jev",
+    "model": "typesafe/jev-1.13",
+    "errors": 0,
+    "median_latency_ms": 472.7,
+    "mean_cost_usd": 0.001069
+   }
+  },
+  "reference_run": "llm-01",
+  "repeats": 3
+ }
+}

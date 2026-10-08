@@ -40,7 +40,7 @@ Invariants worth keeping:
 
 ## Docs and Pages
 
-`docs/*.md` (Mermaid allowed) are built by `tools/builddocs.py` into HTML and published by `.github/workflows/pages.yml` on pushes to `main` touching `docs/`. Site: https://stefletcher.github.io/product-owner-agent-demo/. Check a deploy with `gh run list -w pages -L1`.
+`docs/*.md` (Mermaid allowed) are built by `tools/builddocs.py` into HTML and published by `.github/workflows/pages.yml` on pushes to `main` touching `docs/`. The build generates the charts as inline SVG from `docs/data/comparison.json` (copy a new experiment's `comparison.json` there to refresh them) via placeholders such as `{{hero}}` and `{{chart:latency}}` listed in the script's docstring. Data colours are blue `#2a78d6` (LLM) and orange `#eb6834` (Jev), validated for colour-vision deficiency; keep Mermaid `classDef`s on the same palette. Site: https://stefletcher.github.io/product-owner-agent-demo/. Check a deploy with `gh run list -w pages -L1`.
 
 ## Local observability stack
 

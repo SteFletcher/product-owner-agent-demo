@@ -29,18 +29,18 @@ flowchart TD
     validate_prd -- "passed or cap reached" --> finalise
     finalise --> DONE([PRD + node results])
 
-    classDef gen fill:#4b6cb7,color:#fff,stroke:none
-    classDef bounded fill:#c0392b,color:#fff,stroke:none
-    classDef mcp fill:#16a085,color:#fff,stroke:none
-    classDef det fill:#7f8c8d,color:#fff,stroke:none
+    classDef gen fill:#2a78d6,color:#fff,stroke:none
+    classDef bounded fill:#eb6834,color:#fff,stroke:none
+    classDef mcp fill:#8a909c,color:#fff,stroke:none
+    classDef det fill:#c3c7cf,color:#15213a,stroke:none
     class parse_intent,identify_outcomes,discover_risks,investigate_risks,generate_requirements,refine_requirements,construct_prd,refine_prd gen
     class select_capabilities,select_personas,assess_constraints,assess_risks,classify_requirements,check_coverage,validate_prd bounded
     class retrieve_knowledge,retrieve_constraints mcp
     class finalise det
 ```
 
-Blue = generative (LLM in both variants). Red = bounded (LLM in baseline, Jev in hybrid).
-Green = retrieval over MCP. Grey = deterministic.
+Blue = generative (LLM in both variants). Orange = bounded (LLM in baseline, Jev in hybrid).
+Grey = retrieval over MCP. Light grey = deterministic.
 
 Three loops, each with a hard cap so a run always terminates:
 

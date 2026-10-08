@@ -1,4 +1,4 @@
-# Executive summary: what Jev changed in a Product Owner agent
+# What Jev changed in a Product Owner agent
 
 *Experiment `20261008-113335-6db897`, 8 October 2026. One intent document ("self-service delivery
 rescheduling"), one 18-node Product Owner workflow, run two ways on identical prompts, knowledge
@@ -30,25 +30,18 @@ Jev did what it was supposed to do on the steps it was given: each bounded decis
 cost and time of the hybrid run are almost entirely the generative steps (writing the PRD alone
 is $0.07–0.08 and 90–100 s), which Jev cannot do and was never asked to do.
 
-![Grafana: median latency per node, both variants and the consistency replays](dashboard-workflow.jpg)
+{{chart:race}}
 
-*Red = bounded decision nodes (LLM in the baseline, Jev in the hybrid), blue = generative, green =
-MCP retrieval. Each tile shows the median latency per execution for each variant.*
+{{chart:composition}}
 
 ## Where the saving came from, step by step
 
 Median per execution over three executions of each step (one complete run plus two runs that
 completed these steps before failing later on an unrelated bug, fixed before the final run).
 
-| Bounded step | LLM latency | Jev latency | LLM cost | Jev cost |
-|---|---|---|---|---|
-| Select capabilities and channels | 4.4 s | 1.0 s | $0.0055 | $0.00009 |
-| Select personas and rate impact | 7.7 s | 0.6 s | $0.0105 | $0.00015 |
-| Assess which policies/features apply | 4.8 s | 0.6 s | $0.0059 | $0.00010 |
-| Classify, score and prioritise 12 risks | 22.2 s | 1.4 s | $0.0351 | $0.00062 |
-| Classify and prioritise 18–22 requirements | 21.5 s | 1.7 s | $0.0322 | $0.00066 |
-| Check coverage of outcomes and goals | 2.7 s | 0.3 s | $0.0048 | $0.00010 |
-| Validate the PRD against ten checks | 3.9 s | 0.8 s | $0.0310 | $0.00120 |
+{{chart:latency}}
+
+{{chart:cost}}
 
 The generative steps were the same in both variants (parse intent ~6–7 s, discover risks ~16 s,
 generate requirements ~42 s, write PRD ~90–100 s) and now dominate the run: in the hybrid, the
@@ -68,6 +61,8 @@ Each bounded step was replayed three times on the same frozen input with each en
   three; two requirements *must* twice and *should* once; one coverage check at P = 0.48/0.49
   against a 0.5 threshold. Three steps were perfectly stable; four had one to three flips each.
 
+{{chart:consistency}}
+
 So, on this evidence, **Jev is not more deterministic than a temperature-0 LLM for these
 decisions; it is slightly less.** What Jev does give is a calibrated probability and a
 confidence per decision, which makes the instability visible and fixable: a 0.48 is a 0.48, and
@@ -80,6 +75,8 @@ A separate model (Claude Sonnet 5) judged the two PRDs blind, twice with the ord
 ten-point rubric. It preferred the LLM-only PRD both times (48–38 and 45–42). The gap was on
 *unsupported assumptions*, *internal consistency* and *intent fidelity*; on risk coverage and
 completeness the two were equal.
+
+{{chart:quality}}
 
 The telemetry explains the gap, and it is upstream of the writing:
 
@@ -116,6 +113,14 @@ probabilities are precisely the information needed to tune them.
 2. Raise the OpenRouter limit and run `RUNS=5` on the two bundled intents to get p95 and variance.
 3. Try a stronger writer (Sonnet 5) for `construct_prd` only; it is now 40 % of the hybrid's
    time and cost, and Jev's savings make room for it at the same total price.
+
+## The same data, live in Grafana
+
+Every run is one OpenTelemetry trace, and every node a span with its engine, tokens and cost.
+The Grafana board (`make dashboard`) shows the workflow node by node for both variants and
+links each node to its traces in Tempo.
+
+![Grafana: median latency per node for both variants and the consistency replays](dashboard-workflow.jpg)
 
 *Reproduce: `make benchmark INTENT=examples/example-intent.md RUNS=1`; raw results, PRDs, per-node
 records, judgements and trace ids are in `results/<experiment-id>/`. Traces are in Tempo under
